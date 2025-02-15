@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AreaController;
 use App\Http\Controllers\AuthController;
 
 Route::get('/user', function (Request $request) {
@@ -18,3 +19,5 @@ Route::group(['prefix' => 'auth'], function () {
         Route::get('profile', [AuthController::class, 'userProfile']);
     });
 });
+
+Route::apiResource('areas', AreaController::class);
