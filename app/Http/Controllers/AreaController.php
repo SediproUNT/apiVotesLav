@@ -13,6 +13,7 @@ class AreaController extends Controller
     {
         $areas = Area::all();
         return response()->json(['areas' => $areas], 200);
+
     }
 
     public function store(Request $request): JsonResponse
