@@ -9,7 +9,7 @@ return new class extends Migration {
     {
         Schema::create('sedipranos', function (Blueprint $table) {
             $table->id();
-            $table->integer('codigo')->unique();
+            $table->bigInteger('codigo')->unique();
             $table->string('dni', 8)->nullable();
             $table->string('primer_apellido');
             $table->string('segundo_apellido');

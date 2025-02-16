@@ -4,20 +4,31 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SedipranoController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\CargoController;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+// Rutas públicas
+Route::post('auth/login', [AuthController::class, 'login']);
+Route::post('auth/register', [AuthController::class, 'register']);
+Route::post('sedipranos', [SedipranoController::class, 'store']); // Permitir crear sediprano sin autenticación
 
-Route::group(['prefix' => 'auth'], function () {
-    Route::post('login', [AuthController::class, 'login']);
-    Route::post('register', [AuthController::class, 'register']);
-
-    Route::group(['middleware' => 'auth:api'], function() {
-        Route::post('logout', [AuthController::class, 'logout']);
-        Route::post('refresh', [AuthController::class, 'refresh']);
-        Route::get('profile', [AuthController::class, 'userProfile']);
+// Rutas protegidas
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
     });
-});
 
-Route::apiResource('areas', AreaController::class);
+    Route::get('sedipranos', [SedipranoController::class, 'index']);
+    Route::get('sedipranos/{id}', [SedipranoController::class, 'show']);
+    Route::put('sedipranos/{id}', [SedipranoController::class, 'update']);
+    Route::delete('sedipranos/{id}', [SedipranoController::class, 'destroy']);
+
+    Route::get('/dashboard/stats', [DashboardController::class, 'getStats']);
+    Route::get('/dashboard/user-stats', [DashboardController::class, 'getUserStats']);
+    Route::get('/dashboard/participacion', [DashboardController::class, 'getParticipacionStats']);
+    Route::apiResource('areas', AreaController::class);
+    Route::apiResource('users', UserController::class);
+    Route::apiResource('cargos', CargoController::class);
+});

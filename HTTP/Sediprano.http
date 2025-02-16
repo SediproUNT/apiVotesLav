@@ -1,0 +1,15 @@
+POST http://localhost:8000/api/sedipranos
+Authorization: Bearer 6|4JocVmkpiEkhRIufOJqX8Oua9lJropP43VelJBaeb506b0c8
+Content-Type: application/json
+
+{
+    "name": "Rommel",
+    "email": "rulco@unitru.edu.pe",
+    "codigo": 3273301019,
+    "dni": "75704759",
+    "primer_apellido": "Ulco",
+    "segundo_apellido": "Chavarria",
+    "carrera": "Ingenieria de Sistemas",
+    "celular": "918812501",
+    "fecha_nacimiento": "26/08/2000"
+}

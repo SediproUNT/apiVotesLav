@@ -1,0 +1,8 @@
+POST localhost:8000/api/cargos
+Authorization: Bearer 3|SOLe1swLWwbfLwVtBRzLEtLjDpQUjasvhkJmokyKaaefbc99
+Content-Type: application/json
+
+{
+    "nombre": "Presidente",
+    "descripcion": "Presidente de Sedipro"
+}

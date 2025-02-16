@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Sediprano;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use App\Models\User;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
@@ -28,11 +30,33 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        if (!$token = $this->auth->attempt($validator->validated())) {
-            return response()->json(['error' => 'No autorizado'], 401);
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Credenciales inválidas'
+            ], 401);
         }
 
-        return $this->createNewToken($token);
+        // Ya usa la columna correcta user_id
+        $sediprano = Sediprano::where('user_id', $user->id)->first();
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Login exitoso',
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user' => $user,
+            'sediprano' => $sediprano,
+            'redirect' => '/dashboard',
+            'permissions' => [
+                'can_vote' => true,
+                'is_admin' => $user->is_admin ?? false,
+            ]
+        ], 200);
     }
 
     public function register(Request $request)
@@ -44,7 +68,11 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json($validator->errors()->toJson(), 400);
+            return response()->json([
+                'error' => true,
+                'message' => 'Error de validación',
+                'errors' => $validator->errors()
+            ], 400);
         }
 
         $user = User::create(array_merge(
