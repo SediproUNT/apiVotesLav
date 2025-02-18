@@ -8,12 +8,18 @@ class Votacion extends Model
 {
     protected $table = 'votaciones';
 
-    protected $fillable = ['fecha', 'hora_inicio', 'hora_fin', 'descripcion', 'estado'];
+    protected $fillable = [
+        'fecha',
+        'hora_inicio',
+        'hora_fin',
+        'descripcion',
+        'estado'
+    ];
 
     protected $casts = [
         'fecha' => 'date',
-        'hora_inicio' => 'datetime',
-        'hora_fin' => 'datetime'
+        'hora_inicio' => 'datetime:H:i',
+        'hora_fin' => 'datetime:H:i'
     ];
 
     public function votos()

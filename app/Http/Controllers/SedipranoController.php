@@ -13,7 +13,7 @@ class SedipranoController extends Controller
 {
     public function index()
     {
-        $sedipranos = Sediprano::with('user')->get();
+        $sedipranos = Sediprano::with(['user', 'carrera', 'cargo', 'area'])->get();
         return response()->json($sedipranos);
     }
 
@@ -21,11 +21,14 @@ class SedipranoController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'codigo' => 'required|numeric|unique:sedipranos', // Cambiado de integer a numeric
+                'codigo' => 'required|numeric|unique:sedipranos',
                 'dni' => 'nullable|string|size:8',
                 'primer_apellido' => 'required|string|max:255',
                 'segundo_apellido' => 'required|string|max:255',
-                'carrera' => 'nullable|string|max:255',
+                'carrera_id' => 'required|exists:carreras,id',
+                'cargo_id' => 'required|exists:cargos,id',
+                'area_id' => 'nullable|exists:areas,id',
+                'genero' => 'required|string',
                 'celular' => 'nullable|string|size:9',
                 'fecha_nacimiento' => 'nullable|date_format:d/m/Y',
                 'name' => 'required|string|max:255',
@@ -52,17 +55,23 @@ class SedipranoController extends Controller
                 'password' => Hash::make($request->codigo)
             ]);
 
-            // Crear sediprano
+            // Crear sediprano con los campos actualizados
             $sediprano = Sediprano::create([
                 'codigo' => $request->codigo,
                 'dni' => $request->dni,
                 'primer_apellido' => $request->primer_apellido,
                 'segundo_apellido' => $request->segundo_apellido,
-                'carrera' => $request->carrera,
+                'carrera_id' => $request->carrera_id,
+                'genero' => $request->genero,
+                'cargo_id' => $request->cargo_id,
+                'area_id' => $request->area_id,
                 'celular' => $request->celular,
                 'fecha_nacimiento' => $fechaNacimiento,
                 'user_id' => $user->id
             ]);
+
+            // Cargar las relaciones
+            $sediprano->load(['user', 'carrera', 'cargo', 'area']);
 
             return response()->json([
                 'status' => 'success',
@@ -84,7 +93,7 @@ class SedipranoController extends Controller
 
     public function show($id)
     {
-        $sediprano = Sediprano::with('user')->find($id);
+        $sediprano = Sediprano::with(['user', 'carrera', 'cargo', 'area'])->find($id);
         if (!$sediprano) {
             return response()->json([
                 'message' => 'Sediprano no encontrado'
@@ -103,14 +112,16 @@ class SedipranoController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'codigo' => 'integer|unique:sediprano,codigo,' . $id,
+            'codigo' => 'numeric|unique:sedipranos,codigo,' . $id,
             'dni' => 'nullable|string|size:8',
             'primer_apellido' => 'string|max:255',
             'segundo_apellido' => 'string|max:255',
-            'carrera' => 'nullable|string|max:255',
+            'carrera_id' => 'exists:carreras,id',
+            'cargo_id' => 'exists:cargos,id',
+            'area_id' => 'nullable|exists:areas,id',
+            'genero' => 'string',
             'celular' => 'nullable|string|size:9',
-            'fecha_nacimiento' => 'nullable|date',
-            'user_id' => 'integer|unique:sediprano,user_id,' . $id
+            'fecha_nacimiento' => 'nullable|date'
         ]);
 
         if ($validator->fails()) {
@@ -122,6 +133,7 @@ class SedipranoController extends Controller
         }
 
         $sediprano->update($request->all());
+        $sediprano->load(['user', 'carrera', 'cargo', 'area']);
         return response()->json([
             'message' => 'Sediprano actualizado exitosamente',
             'data' => $sediprano

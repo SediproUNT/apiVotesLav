@@ -6,7 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Candidato extends Model
 {
-    protected $fillable = ['sediprano_id', 'cargo_id', 'foto', 'area_id'];
+    protected $fillable = [
+        'sediprano_id',
+        'cargo_id',
+        'foto',
+        'area_id'
+    ];
 
     public function sediprano()
     {

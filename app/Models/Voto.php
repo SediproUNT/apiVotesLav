@@ -6,7 +6,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Voto extends Model
 {
-    protected $fillable = ['sediprano_id', 'candidato_id', 'votacion_id', 'fecha_voto'];
+    protected $fillable = [
+        'sediprano_id',
+        'candidato_id',
+        'votacion_id',
+        'fecha_voto'
+    ];
 
     protected $casts = [
         'fecha_voto' => 'datetime'

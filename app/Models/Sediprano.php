@@ -4,12 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
+use App\Models\Cargo;
+use App\Models\Carrera;
+use App\Models\Area;
 
 class Sediprano extends Model
 {
     protected $fillable = [
         'codigo', 'dni', 'primer_apellido', 'segundo_apellido',
-        'carrera', 'celular', 'fecha_nacimiento', 'user_id'
+        'carrera_id', 'genero', 'celular', 'fecha_nacimiento', 'user_id',
+        'cargo_id', 'area_id'
     ];
 
     protected $casts = [
@@ -34,5 +38,20 @@ class Sediprano extends Model
     public function asistencias()
     {
         return $this->hasMany(Asistencia::class);
+    }
+
+    public function carrera()
+    {
+        return $this->belongsTo(Carrera::class);
+    }
+
+    public function cargo()
+    {
+        return $this->belongsTo(Cargo::class);
+    }
+
+    public function area()
+    {
+        return $this->belongsTo(Area::class);
     }
 }

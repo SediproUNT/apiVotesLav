@@ -1,8 +1,9 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use App\Enums\Genero;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
 return new class extends Migration {
     public function up()
@@ -13,10 +14,13 @@ return new class extends Migration {
             $table->string('dni', 8)->nullable();
             $table->string('primer_apellido');
             $table->string('segundo_apellido');
-            $table->string('carrera')->nullable();
+            $table->foreignId('carrera_id')->nullable()->constrained('carreras'); // Relación con carreras
+            $table->enum('genero', array_column(Genero::cases(), 'value'));
             $table->string('celular', 9)->nullable();
             $table->date('fecha_nacimiento')->nullable();
             $table->foreignId('user_id')->unique()->constrained('users');
+            $table->foreignId('cargo_id')->constrained();  // Cargo actual
+            $table->foreignId('area_id')->nullable()->constrained(); // Área actual
             $table->timestamps();
         });
     }

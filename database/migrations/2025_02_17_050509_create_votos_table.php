@@ -9,10 +9,10 @@ return new class extends Migration {
     {
         Schema::create('votos', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sediprano_id')->constrained();
-            $table->foreignId('candidato_id')->constrained();
-            $table->foreignId('votacion_id')->constrained('votaciones');
-            $table->timestamp('fecha_voto')->useCurrent();
+            $table->foreignId('sediprano_id')->constrained(); // Quién votó
+            $table->foreignId('candidato_id')->constrained(); // A quién votó
+            $table->foreignId('votacion_id')->constrained('votaciones'); // De qué votación es el voto
+            $table->timestamp('fecha_voto')->useCurrent(); // Fecha y hora del voto
             $table->timestamps();
         });
     }

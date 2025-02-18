@@ -13,7 +13,7 @@ return new class extends Migration {
             $table->time('hora_inicio');
             $table->time('hora_fin');
             $table->text('descripcion')->nullable();
-            $table->string('estado', 20)->default('pendiente');
+            $table->string('estado', 20)->default('pendiente'); // Pendiente, En curso, Finalizada
             $table->timestamps();
         });
     }
