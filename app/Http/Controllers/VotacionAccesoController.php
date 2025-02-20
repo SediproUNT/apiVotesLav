@@ -127,8 +127,9 @@ class VotacionAccesoController extends Controller
         $request->validate([
             'sediprano_id' => 'required|exists:sedipranos,id',
             'votacion_id' => 'required|exists:votaciones,id',
-            'voto_presidente_id' => 'required|exists:candidatos,id',
-            'voto_director_id' => 'required|exists:candidatos,id'
+            'votos' => 'required|array',
+            'votos.*.candidato_id' => 'required_if:votos.*.es_blanco,false|exists:candidatos,id',
+            'votos.*.es_blanco' => 'required|boolean'
         ]);
 
         // Verificar si ya votó
@@ -144,26 +145,29 @@ class VotacionAccesoController extends Controller
         }
 
         // Registrar votos
-        $votosARegistrar = [
-            [
+        $votosARegistrar = collect($request->votos)->map(function($voto) use ($request) {
+            return [
                 'sediprano_id' => $request->sediprano_id,
-                'candidato_id' => $request->voto_presidente_id,
+                'candidato_id' => $voto['es_blanco'] ? null : $voto['candidato_id'],
+                'es_blanco' => $voto['es_blanco'],
                 'votacion_id' => $request->votacion_id,
                 'fecha_voto' => now()
-            ],
-            [
-                'sediprano_id' => $request->sediprano_id,
-                'candidato_id' => $request->voto_director_id,
-                'votacion_id' => $request->votacion_id,
-                'fecha_voto' => now()
-            ]
-        ];
+            ];
+        })->all();
 
-        Voto::insert($votosARegistrar);
+        try {
+            Voto::insert($votosARegistrar);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Voto registrado exitosamente'
-        ]);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Votos registrados exitosamente'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al registrar los votos',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

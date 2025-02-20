@@ -10,11 +10,13 @@ class Voto extends Model
         'sediprano_id',
         'candidato_id',
         'votacion_id',
+        'es_blanco',
         'fecha_voto'
     ];
 
     protected $casts = [
-        'fecha_voto' => 'datetime'
+        'fecha_voto' => 'datetime',
+        'es_blanco' => 'boolean'
     ];
 
     public function sediprano()
