@@ -13,10 +13,16 @@ use App\Http\Controllers\CandidatoController;
 use App\Http\Controllers\VotacionController;
 use App\Http\Controllers\VotoController;
 use App\Http\Controllers\AsistenciaController;
+use App\Http\Controllers\VotacionAccesoController;
 
 // Rutas públicas
 Route::post('auth/login', [AuthController::class, 'login']);
 Route::post('auth/register', [AuthController::class, 'register']);
+
+// Rutas para el proceso de votación
+Route::post('/votacion/validar-acceso', [VotacionAccesoController::class, 'validarAcceso']);
+Route::post('/votacion/emitir-voto', [VotacionAccesoController::class, 'emitirVoto']);
+
 
 // Rutas protegidas
 Route::middleware('auth:sanctum')->group(function () {
@@ -38,4 +44,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('asistencias', AsistenciaController::class);
     Route::get('asistencias/fecha/{fecha}', [AsistenciaController::class, 'porFecha']);
     Route::get('asistencias/sediprano/{sedipranoId}', [AsistenciaController::class, 'porSediprano']);
+
+
+
 });

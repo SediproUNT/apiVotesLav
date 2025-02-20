@@ -9,8 +9,9 @@ class Candidato extends Model
     protected $fillable = [
         'sediprano_id',
         'cargo_id',
-        'foto',
-        'area_id'
+        'area_id',
+        'votacion_id',
+        'foto'
     ];
 
     public function sediprano()
@@ -26,6 +27,11 @@ class Candidato extends Model
     public function area()
     {
         return $this->belongsTo(Area::class);
+    }
+
+    public function votacion()
+    {
+        return $this->belongsTo(Votacion::class);
     }
 
     public function votos()

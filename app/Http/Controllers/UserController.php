@@ -11,10 +11,11 @@ class UserController extends Controller
 {
     public function index()
     {
-        // $users = User::all(['id', 'name', 'email']); // Solo campos básicos
-        // return response()->json($users);
-        return User::orderBy('created_at', 'desc')
-               ->paginate(10);
+        $users = User::all(['id', 'name', 'email']); // Solo campos básicos
+        return response()->json($users);
+
+        // return User::orderBy('created_at', 'desc')
+        //        ->paginate(10);
     }
 
     public function store(Request $request)
