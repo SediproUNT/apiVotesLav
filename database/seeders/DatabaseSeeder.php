@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -25,6 +25,23 @@ class DatabaseSeeder extends Seeder
             AreasSeeder::class,
             UserSeeder::class,
             SedipranoSeeder::class,
+            VotacionSeeder::class,
+            CandidatoSeeder::class,
         ]);
+
+        // Resetear todas las secuencias después de sembrar
+        $this->resetPostgresSequences();
+    }
+
+    private function resetPostgresSequences()
+    {
+        // Lista de tablas que necesitan reset de secuencia
+        $tables = ['areas', 'cargos','votaciones', 'candidatos', 'sedipranos', 'votos', 'carreras', 'users'];
+
+        foreach ($tables as $table) {
+            // Obtener el máximo ID y resetear la secuencia
+            $max = DB::table($table)->max('id') ?? 0;
+            DB::statement("ALTER SEQUENCE {$table}_id_seq RESTART WITH " . ($max + 1));
+        }
     }
 }

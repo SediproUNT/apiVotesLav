@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Votacion;
+use App\Enums\EstadoVotacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Enum;
 
 class VotacionController extends Controller
 {
@@ -21,7 +23,7 @@ class VotacionController extends Controller
             'hora_inicio' => 'required|date_format:H:i',
             'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
             'descripcion' => 'nullable|string',
-            'estado' => 'required|in:pendiente,activa,finalizada'
+            'estado' => ['required', new Enum(EstadoVotacion::class)]
         ]);
 
         if ($validator->fails()) {
@@ -32,7 +34,10 @@ class VotacionController extends Controller
             ], 422);
         }
 
-        $votacion = Votacion::create($request->all());
+        $votacion = Votacion::create([
+            ...$request->except('estado'),
+            'estado' => EstadoVotacion::from($request->estado)
+        ]);
 
         return response()->json([
             'message' => 'Votación creada exitosamente',
@@ -64,11 +69,11 @@ class VotacionController extends Controller
         }
 
         $validator = Validator::make($request->all(), [
-            'fecha' => 'date',
-            'hora_inicio' => 'date_format:H:i',
-            'hora_fin' => 'date_format:H:i|after:hora_inicio',
+            'fecha' => 'sometimes|date',
+            'hora_inicio' => 'sometimes|date_format:H:i',
+            'hora_fin' => 'sometimes|date_format:H:i|after:hora_inicio',
             'descripcion' => 'nullable|string',
-            'estado' => 'in:pendiente,activa,finalizada'
+            'estado' => ['sometimes', new Enum(EstadoVotacion::class)]
         ]);
 
         if ($validator->fails()) {
@@ -79,7 +84,12 @@ class VotacionController extends Controller
             ], 422);
         }
 
-        $votacion->update($request->all());
+        $updateData = $request->except('estado');
+        if ($request->has('estado')) {
+            $updateData['estado'] = EstadoVotacion::from($request->estado);
+        }
+
+        $votacion->update($updateData);
 
         return response()->json([
             'message' => 'Votación actualizada exitosamente',

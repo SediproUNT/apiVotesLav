@@ -1483,7 +1483,7 @@ class SedipranoSeeder extends Seeder
             DB::table('sedipranos')->insert($data);
         }
 
-        $this->command->info('¡Datos de sedipranos importados exitosamente!');
+        // $this->command->info('¡Datos de sedipranos importados exitosamente!');
     }
 
     /**

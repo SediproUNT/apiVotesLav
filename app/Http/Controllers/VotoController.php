@@ -6,6 +6,7 @@ use App\Models\Voto;
 use App\Models\Votacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class VotoController extends Controller
 {
@@ -19,8 +20,9 @@ class VotoController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'sediprano_id' => 'required|exists:sedipranos,id',
-            'candidato_id' => 'required|exists:candidatos,id',
-            'votacion_id' => 'required|exists:votaciones,id'
+            'votacion_id' => 'required|exists:votaciones,id',
+            'es_blanco' => 'required|boolean',
+            'candidato_id' => 'required_if:es_blanco,false|exists:candidatos,id'
         ]);
 
         if ($validator->fails()) {
@@ -52,13 +54,35 @@ class VotoController extends Controller
             ], 400);
         }
 
-        $voto = Voto::create($request->all());
-        $voto->load(['sediprano', 'candidato', 'votacion']);
+        try {
+            $voto = new Voto([
+                'sediprano_id' => $request->sediprano_id,
+                'votacion_id' => $request->votacion_id,
+                'es_blanco' => $request->es_blanco,
+                'candidato_id' => $request->es_blanco ? null : $request->candidato_id,
+                'fecha_voto' => now()
+            ]);
 
-        return response()->json([
-            'message' => 'Voto registrado exitosamente',
-            'data' => $voto
-        ], 201);
+            $voto->save();
+            $voto->load(['sediprano', 'candidato', 'votacion']);
+
+            return response()->json([
+                'message' => 'Voto registrado exitosamente',
+                'data' => $voto
+            ], 201);
+
+        } catch (\Exception $e) {
+            Log::error('Error al registrar voto:', [
+                'error' => $e->getMessage(),
+                'data' => $request->all()
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al registrar el voto',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function show($id)
@@ -78,26 +102,39 @@ class VotoController extends Controller
 
     public function destroy($id)
     {
-        $voto = Voto::find($id);
+        try {
+            $voto = Voto::with('votacion')->find($id);
 
-        if (!$voto) {
+            if (!$voto) {
+                return response()->json([
+                    'message' => 'Voto no encontrado'
+                ], 404);
+            }
+
+            // Verificar si la votación está activa
+            if ($voto->votacion->estado !== 'activa') {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No se puede eliminar un voto de una votación finalizada'
+                ], 400);
+            }
+
+            $voto->delete();
+
             return response()->json([
-                'message' => 'Voto no encontrado'
-            ], 404);
-        }
+                'message' => 'Voto eliminado exitosamente'
+            ]);
 
-        // Verificar si la votación está activa
-        if ($voto->votacion->estado !== 'activa') {
+        } catch (\Exception $e) {
+            Log::error('Error al eliminar voto:', [
+                'id' => $id,
+                'error' => $e->getMessage()
+            ]);
+
             return response()->json([
                 'status' => 'error',
-                'message' => 'No se puede eliminar un voto de una votación finalizada'
-            ], 400);
+                'message' => 'Error al eliminar el voto'
+            ], 500);
         }
-
-        $voto->delete();
-
-        return response()->json([
-            'message' => 'Voto eliminado exitosamente'
-        ]);
     }
 }

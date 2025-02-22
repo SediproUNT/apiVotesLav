@@ -11,7 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('sediprano_id')->constrained(); // Quién votó
             $table->boolean('es_blanco')->default(false);
-            $table->foreignId('candidato_id')->constrained(); // A quién votó
+            $table->foreignId('candidato_id')->nullable()->constrained(); // A quién votó
             $table->foreignId('votacion_id')->constrained('votaciones'); // De qué votación es el voto
             $table->timestamp('fecha_voto')->useCurrent(); // Fecha y hora del voto
             $table->timestamps();

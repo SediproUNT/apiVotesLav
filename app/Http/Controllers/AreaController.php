@@ -6,6 +6,7 @@ use App\Models\Area;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 
 class AreaController extends Controller
 {
@@ -18,13 +19,31 @@ class AreaController extends Controller
 
     public function store(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'nombre' => 'required|unique:areas|max:255',
-            'abreviatura' => 'required|unique:areas|max:10'
-        ]);
+        try {
+            DB::beginTransaction();
 
-        $area = Area::create($validated);
-        return response()->json(['area' => $area], 201);
+            $validated = $request->validate([
+                'nombre' => 'required|unique:areas|max:255',
+                'abreviatura' => 'required|unique:areas|max:10'
+            ]);
+
+            $area = Area::create($validated);
+
+            DB::commit();
+
+            return response()->json([
+                'message' => 'Área creada exitosamente',
+                'area' => $area
+            ], 201);
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'message' => 'Error al crear el área',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function show(Area $area): JsonResponse
