@@ -10,9 +10,41 @@ use Illuminate\Support\Facades\Log;
 
 class VotoController extends Controller
 {
+    private function transformVoto($voto) {
+        if ($voto->candidato) {
+            $voto->candidato->sediprano->user_data = $voto->candidato->sediprano->user;
+            $voto->candidato->sediprano->area_data = $voto->candidato->sediprano->area;
+            $voto->candidato->sediprano->cargo_data = $voto->candidato->sediprano->cargo;
+            unset(
+                $voto->candidato->sediprano->user,
+                $voto->candidato->sediprano->area,
+                $voto->candidato->sediprano->cargo
+            );
+        }
+
+        $voto->sediprano->user_data = $voto->sediprano->user;
+        $voto->sediprano->area_data = $voto->sediprano->area;
+        $voto->sediprano->cargo_data = $voto->sediprano->cargo;
+        unset($voto->sediprano->user, $voto->sediprano->area, $voto->sediprano->cargo);
+
+        return $voto;
+    }
+
     public function index()
     {
-        $votos = Voto::with(['sediprano', 'candidato', 'votacion'])->get();
+        $votos = Voto::with([
+            'sediprano.user',
+            'sediprano.area',
+            'sediprano.cargo',
+            'candidato.sediprano.user',
+            'candidato.sediprano.area',
+            'candidato.sediprano.cargo',
+            'votacion'
+        ])
+        ->get()
+        ->map(function ($voto) {
+            return $this->transformVoto($voto);
+        });
         return response()->json($votos);
     }
 
@@ -64,11 +96,19 @@ class VotoController extends Controller
             ]);
 
             $voto->save();
-            $voto->load(['sediprano', 'candidato', 'votacion']);
+            $voto->load([
+                'sediprano.user',
+                'sediprano.area',
+                'sediprano.cargo',
+                'candidato.sediprano.user',
+                'candidato.sediprano.area',
+                'candidato.sediprano.cargo',
+                'votacion'
+            ]);
 
             return response()->json([
                 'message' => 'Voto registrado exitosamente',
-                'data' => $voto
+                'data' => $this->transformVoto($voto)
             ], 201);
 
         } catch (\Exception $e) {
@@ -87,7 +127,15 @@ class VotoController extends Controller
 
     public function show($id)
     {
-        $voto = Voto::with(['sediprano', 'candidato', 'votacion'])->find($id);
+        $voto = Voto::with([
+            'sediprano.user',
+            'sediprano.area',
+            'sediprano.cargo',
+            'candidato.sediprano.user',
+            'candidato.sediprano.area',
+            'candidato.sediprano.cargo',
+            'votacion'
+        ])->find($id);
 
         if (!$voto) {
             return response()->json([
@@ -95,7 +143,7 @@ class VotoController extends Controller
             ], 404);
         }
 
-        return response()->json($voto);
+        return response()->json($this->transformVoto($voto));
     }
 
     // No implementamos update porque los votos no deberían modificarse
