@@ -21,6 +21,11 @@ return new class extends Migration {
             $table->foreignId('user_id')->unique()->constrained('users');
             $table->foreignId('cargo_id')->constrained();  // Cargo actual
             $table->foreignId('area_id')->nullable()->constrained(); // Área actual
+            $table->string('qr_code')->nullable();
+            $table->string('qr_path')->nullable(); // Agregamos este campo
+            $table->string('secret_key')->nullable(); // Clave secreta única
+            $table->string('token')->nullable();      // Token UUID
+            $table->string('qr_hash')->nullable();    // Hash HMAC del QR
             $table->timestamps();
         });
     }

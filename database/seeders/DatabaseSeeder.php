@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Illuminate\Console\Scheduling\Event;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -27,6 +28,7 @@ class DatabaseSeeder extends Seeder
             SedipranoSeeder::class,
             VotacionSeeder::class,
             CandidatoSeeder::class,
+            EventoSeeder::class,
         ]);
 
         // Resetear todas las secuencias después de sembrar
@@ -36,7 +38,7 @@ class DatabaseSeeder extends Seeder
     private function resetPostgresSequences()
     {
         // Lista de tablas que necesitan reset de secuencia
-        $tables = ['areas', 'cargos','votaciones', 'candidatos', 'sedipranos', 'votos', 'carreras', 'users'];
+        $tables = ['areas', 'cargos','votaciones', 'candidatos', 'sedipranos', 'votos', 'carreras', 'users', 'eventos', 'asistencias'];
 
         foreach ($tables as $table) {
             // Obtener el máximo ID y resetear la secuencia

@@ -13,7 +13,8 @@ class Sediprano extends Model
     protected $fillable = [
         'codigo', 'dni', 'primer_apellido', 'segundo_apellido',
         'carrera_id', 'genero', 'celular', 'fecha_nacimiento', 'user_id',
-        'cargo_id', 'area_id'
+        'cargo_id', 'area_id', 'qr_code', 'qr_path', 'secret_key', 'token',
+        'qr_hash'
     ];
 
     protected $casts = [

@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Evento;
+use App\Models\Sediprano;
 use App\Models\Asistencia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 
 class AsistenciaController extends Controller
 {
@@ -136,5 +138,65 @@ class AsistenciaController extends Controller
             ->get();
 
         return response()->json($asistencias);
+    }
+
+    public function registrarAsistencia(Request $request)
+    {
+        $request->validate([
+            'qr_code' => 'required|string',
+            'evento_id' => 'required|exists:eventos,id'
+        ]);
+
+        // Buscar el sediprano por el código QR
+        $sediprano = Sediprano::where('qr_code', $request->qr_code)->first();
+        if (!$sediprano) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Código QR no válido'
+            ], 404);
+        }
+
+        // Verificar si el evento está activo
+        $evento = Evento::findOrFail($request->evento_id);
+        if ($evento->estado !== 'en_curso') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'El evento no está activo'
+            ], 400);
+        }
+
+        // Verificar si ya existe una asistencia
+        $asistenciaExistente = Asistencia::where('evento_id', $evento->id)
+            ->where('sediprano_id', $sediprano->id)
+            ->first();
+
+        if ($asistenciaExistente) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'La asistencia ya fue registrada'
+            ], 400);
+        }
+
+        // Determinar el estado de la asistencia
+        $horaRegistro = Carbon::now();
+        $horaInicio = Carbon::parse($evento->fecha . ' ' . $evento->hora_inicio);
+        $tolerancia = 15; // minutos de tolerancia
+
+        $estado = $horaRegistro->diffInMinutes($horaInicio) <= $tolerancia
+            ? 'presente'
+            : 'tardanza';
+
+        // Registrar asistencia
+        $asistencia = Asistencia::create([
+            'evento_id' => $evento->id,
+            'sediprano_id' => $sediprano->id,
+            'hora_registro' => $horaRegistro,
+            'estado' => $estado
+        ]);
+
+        return response()->json([
+            'message' => 'Asistencia registrada exitosamente',
+            'data' => $asistencia->load('sediprano')
+        ], 201);
     }
 }

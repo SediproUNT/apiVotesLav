@@ -33,8 +33,10 @@ class SedipranoSeeder extends Seeder
                 'cargo_id' => 3,
                 'area_id' => 5,
                 'genero' => Genero::Femenino->value, // Usa el Enum para el género
+                'qr_code' => NULL,
+                'qr_path' => NULL,
                 'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
             ],
             [
                 'codigo' => '1050601920',
@@ -1428,6 +1430,8 @@ class SedipranoSeeder extends Seeder
                 'cargo_id' => 3,
                 'area_id' => 4,
                 'genero' => Genero::Masculino->value, // Usa el Enum para el género
+                'qr_code' => NULL,
+                'qr_path' => NULL,
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],

@@ -3,24 +3,24 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Asistencia extends Model
 {
     protected $fillable = [
+        'evento_id',
         'sediprano_id',
-        'fecha',
-        'hora_ingreso',
+        'hora_registro',
         'estado',
-        'participacion'
+        'observacion'
     ];
 
-    protected $casts = [
-        'fecha' => 'date',
-        'hora_ingreso' => 'datetime:H:i',
-        'participacion' => 'boolean'
-    ];
+    public function evento(): BelongsTo
+    {
+        return $this->belongsTo(Evento::class);
+    }
 
-    public function sediprano()
+    public function sediprano(): BelongsTo
     {
         return $this->belongsTo(Sediprano::class);
     }
