@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->date('fecha');
             $table->time('hora_inicio');
             $table->time('hora_fin');
-            $table->enum('estado', ['programado', 'en_curso', 'finalizado']);
+            $table->enum('estado', ['programado', 'en_curso', 'finalizado', 'cancelado']);
             $table->string('ubicacion')->nullable();
             $table->timestamps();
         });
