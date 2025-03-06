@@ -20,12 +20,20 @@ use App\Http\Controllers\EventoController;
 Route::post('auth/login', [AuthController::class, 'login']);
 Route::post('auth/register', [AuthController::class, 'register']);
 
+// Ruta pública para validar QR y registrar asistencia
+Route::post('sedipranos/validate-qr', [SedipranoController::class, 'validateQr']);
+
 // Rutas para el proceso de votación
 Route::post('/votacion/validar-acceso', [VotacionAccesoController::class, 'validarAcceso']);
 Route::post('/votacion/emitir-voto', [VotacionAccesoController::class, 'emitirVoto']);
 
-// Ruta pública para registro de asistencias
+// Rutas públicas para asistencias
 Route::post('/asistencias/registrar', [AsistenciaController::class, 'registrarAsistencia']);
+Route::get('/asistencias/publicas', [AsistenciaController::class, 'asistenciasPublicas']); // Nueva ruta pública para consultar asistencias
+Route::get('/asistencias/evento/{eventoId}', [AsistenciaController::class, 'asistenciasPorEvento']); // Nueva ruta para filtrar por evento
+
+// Rutas públicas
+Route::get('eventos/disponibles', [EventoController::class, 'eventosDisponibles']);
 
 // Rutas protegidas
 Route::middleware('auth:sanctum')->group(function () {
@@ -40,7 +48,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('users', UserController::class);
     Route::apiResource('sedipranos', SedipranoController::class);
     Route::post('sedipranos/{id}/generate-qr', [SedipranoController::class, 'generateQrCode']);
-    Route::post('sedipranos/validate-qr', [SedipranoController::class, 'validateQr']);
     Route::apiResource('cargos', CargoController::class);
     Route::apiResource('carreras', CarreraController::class);
     Route::apiResource('candidatos', CandidatoController::class);

@@ -13,8 +13,38 @@ class AsistenciaController extends Controller
 {
     public function index()
     {
-        $asistencias = Asistencia::with('sediprano')->get();
-        return response()->json($asistencias);
+        // Cargar todas las asistencias con sus relaciones necesarias
+        $asistencias = Asistencia::with([
+            'evento', 
+            'sediprano.user',
+            'sediprano.carrera',
+            'sediprano.area',
+            'sediprano.cargo'
+        ])->orderBy('hora_registro', 'desc')->get();
+        
+        // Formatear la respuesta utilizando el accessor
+        $asistenciasFormateadas = $asistencias->map(function ($asistencia) {
+            return [
+                'id' => $asistencia->id,
+                'evento' => [
+                    'id' => $asistencia->evento->id,
+                    'nombre' => $asistencia->evento->nombre,
+                    'fecha' => $asistencia->evento->fecha,
+                    'hora_inicio' => $asistencia->evento->hora_inicio,
+                    'hora_fin' => $asistencia->evento->hora_fin,
+                ],
+                'hora_registro' => $asistencia->hora_registro->format('Y-m-d H:i:s'),
+                'estado' => $asistencia->estado,
+                'observacion' => $asistencia->observacion,
+                'sediprano' => $asistencia->sediprano_info  // Uso del accessor
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'total' => $asistencias->count(),
+            'data' => $asistenciasFormateadas->toArray()
+        ]);
     }
 
     public function store(Request $request)
@@ -198,5 +228,142 @@ class AsistenciaController extends Controller
             'message' => 'Asistencia registrada exitosamente',
             'data' => $asistencia->load('sediprano')
         ], 201);
+    }
+
+    /**
+     * Método público para consultar asistencias con información detallada
+     * 
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function asistenciasPublicas(Request $request)
+    {
+        try {
+            $query = Asistencia::with([
+                'evento', 
+                'sediprano.user', 
+                'sediprano.carrera',
+                'sediprano.area',
+                'sediprano.cargo'
+            ]);
+            
+            // Filtrar por fecha si se proporciona
+            if ($request->has('fecha')) {
+                $fecha = $request->fecha;
+                $query->whereDate('hora_registro', $fecha);
+            }
+            
+            // Filtrar por evento si se proporciona
+            if ($request->has('evento_id')) {
+                $query->where('evento_id', $request->evento_id);
+            }
+            
+            // Ordenar por fecha/hora más reciente por defecto
+            $asistencias = $query->orderBy('hora_registro', 'desc')->get();
+            
+            // Formatear la respuesta con toda la información solicitada
+            $asistenciasFormateadas = $asistencias->map(function ($asistencia) {
+                return [
+                    'id' => $asistencia->id,
+                    'evento' => [
+                        'id' => $asistencia->evento->id,
+                        'nombre' => $asistencia->evento->nombre,
+                        'fecha' => $asistencia->evento->fecha,
+                        'hora_inicio' => $asistencia->evento->hora_inicio,
+                        'hora_fin' => $asistencia->evento->hora_fin,
+                    ],
+                    'hora_registro' => $asistencia->hora_registro->format('Y-m-d H:i:s'),
+                    'estado' => $asistencia->estado,
+                    'observacion' => $asistencia->observacion,
+                    'sediprano' => [
+                        'id' => $asistencia->sediprano->id,
+                        'codigo' => $asistencia->sediprano->codigo,
+                        'primer_apellido' => $asistencia->sediprano->primer_apellido,
+                        'segundo_apellido' => $asistencia->sediprano->segundo_apellido,
+                        'nombre_completo' => $asistencia->sediprano->user->name,
+                        'carrera' => $asistencia->sediprano->carrera ? $asistencia->sediprano->carrera->nombre : null,
+                        'area' => $asistencia->sediprano->area ? $asistencia->sediprano->area->abreviatura : null,
+                        'cargo' => $asistencia->sediprano->cargo ? $asistencia->sediprano->cargo->nombre : null
+                    ]
+                ];
+            });
+
+            // Hay un problema aquí en el código original - la respuesta estaba mal formateada
+            return response()->json([
+                'status' => 'success',
+                'total' => $asistencias->count(),
+                'data' => $asistenciasFormateadas->toArray() // Asegurarse de convertir la colección a array
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener las asistencias: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    /**
+     * Consultar asistencias por evento específico con información detallada
+     * 
+     * @param int $eventoId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function asistenciasPorEvento($eventoId)
+    {
+        try {
+            // Verificar que el evento exista
+            $evento = Evento::findOrFail($eventoId);
+            
+            // Obtener asistencias con todas las relaciones necesarias
+            $asistencias = Asistencia::with([
+                'sediprano.user', 
+                'sediprano.carrera',
+                'sediprano.area',
+                'sediprano.cargo'
+            ])
+            ->where('evento_id', $eventoId)
+            ->orderBy('hora_registro', 'desc')
+            ->get();
+            
+            // Formatear la respuesta con toda la información solicitada
+            $asistenciasFormateadas = $asistencias->map(function ($asistencia) {
+                return [
+                    'id' => $asistencia->id,
+                    'hora_registro' => $asistencia->hora_registro->format('Y-m-d H:i:s'),
+                    'estado' => $asistencia->estado,
+                    'observacion' => $asistencia->observacion,
+                    'sediprano' => [
+                        'id' => $asistencia->sediprano->id,
+                        'codigo' => $asistencia->sediprano->codigo,
+                        'primer_apellido' => $asistencia->sediprano->primer_apellido,
+                        'segundo_apellido' => $asistencia->sediprano->segundo_apellido,
+                        'nombre_completo' => $asistencia->sediprano->user->name,
+                        'carrera' => $asistencia->sediprano->carrera ? $asistencia->sediprano->carrera->nombre : null,
+                        'area' => $asistencia->sediprano->area ? $asistencia->sediprano->area->nombre : null,
+                        'cargo' => $asistencia->sediprano->cargo ? $asistencia->sediprano->cargo->nombre : null
+                    ]
+                ];
+            });
+            
+            return response()->json([
+                'status' => 'success',
+                'evento' => [
+                    'id' => $evento->id,
+                    'nombre' => $evento->nombre,
+                    'fecha' => $evento->fecha,
+                    'hora_inicio' => $evento->hora_inicio,
+                    'hora_fin' => $evento->hora_fin,
+                    'ubicacion' => $evento->ubicacion,
+                    'descripcion' => $evento->descripcion
+                ],
+                'total_asistencias' => $asistencias->count(),
+                'asistencias' => $asistenciasFormateadas->toArray() // Asegurarse de convertir la colección a array
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener las asistencias: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

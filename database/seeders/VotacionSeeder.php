@@ -12,18 +12,20 @@ class VotacionSeeder extends Seeder
     public function run(): void
     {
         // Establecer explícitamente la zona horaria
-        $fecha = Carbon::create(2025, 3, 1)->setTimezone('America/Lima');
+        $fecha = Carbon::create(2025, 3, 8)->setTimezone('America/Lima');
 
         Votacion::create([
+            'name' => 'Elecciones Sedipranas 2025',
             'fecha' => $fecha->toDateString(),
             'hora_inicio' => '15:00',  // Formato simplificado ya que el modelo maneja el casting
             'hora_fin' => '16:00',     // Formato simplificado ya que el modelo maneja el casting
-            'descripcion' => 'Votación Sedipro 2025',
+            'descripcion' => 'Votación para elegir a los nuevos representantes de Sedipro',
             'estado' => EstadoVotacion::Pendiente
         ]);
 
         // Si necesitas más votaciones de prueba:
         Votacion::create([
+            'name' => 'Votación de Prueba',
             'fecha' => Carbon::today()->toDateString(),
             'hora_inicio' => Carbon::now()->format('H:i'),
             'hora_fin' => Carbon::now()->addHours(2)->format('H:i'),

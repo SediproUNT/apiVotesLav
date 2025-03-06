@@ -10,6 +10,7 @@ return new class extends Migration {
     {
         Schema::create('votaciones', function (Blueprint $table) {
             $table->id();
+            $table->string('name');
             $table->date('fecha');
             $table->time('hora_inicio');
             $table->time('hora_fin');

@@ -1430,8 +1430,11 @@ class SedipranoSeeder extends Seeder
                 'cargo_id' => 3,
                 'area_id' => 4,
                 'genero' => Genero::Masculino->value, // Usa el Enum para el género
-                'qr_code' => NULL,
-                'qr_path' => NULL,
+                'qr_code' => 'SED-3273301019-e6c8f360-03a3c8ed',
+                'qr_path' => 'qrcodes/SED-3273301019-e6c8f360-03a3c8ed.svg',
+                'secret_key' => '303fbecd0b321a7562f5f2a1e7d90148899f4cd273a398365b8d3643853e8aab',
+                'token' => 'e6c8f360-17a6-4a41-be39-8f06d235e5b2',
+                'qr_hash' => '03a3c8ed241231b31694b1cc2d1675c795bd1b299d92455dc5009c8087834baf',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],

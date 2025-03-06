@@ -32,7 +32,7 @@ class AreasSeeder extends Seeder
             ],
             [
                 'id' => 3,
-                'nombre' => 'Maketing',
+                'nombre' => 'Marketing',
                 'abreviatura' => 'MKT',
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
