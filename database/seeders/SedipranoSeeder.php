@@ -161,12 +161,12 @@ class SedipranoSeeder extends Seeder
             [
                 'codigo' => '1041500221',
                 'dni' => '70608670',
-                'primer_apellido' => 'HERNÁNDEZ',
-                'segundo_apellido' => 'JÁUREGUI',
+                'primer_apellido' => 'Hernández',
+                'segundo_apellido' => 'Jáuregui', 
                 'carrera_id' => 37,  // Ing Metalurgica
                 'celular' => '993658887',
                 'fecha_nacimiento' => Carbon::parse('2003-10-04'),
-                'user_id' => $this->createUser('JUAN DIEGO', 'juanhjauregui15@gmail.com', null),
+                'user_id' => $this->createUser('Juan Diego', 'juanhjauregui15@gmail.com', null),
                 'cargo_id' => 3,
                 'area_id' => 5,
                 'genero' => Genero::Masculino->value, // Usa el Enum para el género
@@ -236,12 +236,12 @@ class SedipranoSeeder extends Seeder
             [
                 'codigo' => '1051300421',
                 'dni' => '70256048',
-                'primer_apellido' => 'GARCÍA',
-                'segundo_apellido' => 'GARCÍA',
+                'primer_apellido' => 'García',
+                'segundo_apellido' => 'García',
                 'carrera_id' => 34, // Ing Industrial
                 'celular' => '947275397',
                 'fecha_nacimiento' => Carbon::parse('2002-08-12'),
-                'user_id' => $this->createUser('MICHAEL JUNIOR', 't1051300421@unitru.edu.pe', null),
+                'user_id' => $this->createUser('Michael Junior', 't1051300421@unitru.edu.pe', null),
                 'cargo_id' => 3,
                 'area_id' => 5,
                 'genero' => Genero::Masculino->value, // Usa el Enum para el género
@@ -266,15 +266,15 @@ class SedipranoSeeder extends Seeder
             [
                 'codigo' => '1514000824',
                 'dni' => '72885589',
-                'primer_apellido' => 'CARRASCO',
-                'segundo_apellido' => 'LALANGUI',
+                'primer_apellido' => 'Carrasco',
+                'segundo_apellido' => 'Lalangui', 
                 'carrera_id' => 30, // Ing Civil
                 'celular' => '949804469',
                 'fecha_nacimiento' => Carbon::parse('2006-03-02'),
-                'user_id' => $this->createUser('RENZO GEORKAEL', 'rgcarrascol@unitru.edu.pe', null),
+                'user_id' => $this->createUser('Renzo Georkael', 'rgcarrascol@unitru.edu.pe', null),
                 'cargo_id' => 3,
                 'area_id' => 5,
-                 'genero' => Genero::Masculino->value, // Usa el Enum para el género
+                'genero' => Genero::Masculino->value, // Usa el Enum para el género
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
@@ -461,12 +461,12 @@ class SedipranoSeeder extends Seeder
             [
                 'codigo' => '1010700523',
                 'dni' => '72503219',
-                'primer_apellido' => 'PAREDES',
-                'segundo_apellido' => 'CACHIQUE',
+                'primer_apellido' => 'Paredes',
+                'segundo_apellido' => 'Cachique',
                 'carrera_id' => 12, // Economia
                 'celular' => '925844775',
                 'fecha_nacimiento' => Carbon::parse('2004-09-22'),
-                'user_id' => $this->createUser('GRECIA ALEXANDRA', 'Gaparedesca@unitru.edu.pe', null),
+                'user_id' => $this->createUser('Grecia Alexandra', 'Gaparedesca@unitru.edu.pe', null),
                 'cargo_id' => 3,
                 'area_id' => 2,
                 'genero' => Genero::Femenino->value, // Usa el Enum para el género
@@ -597,11 +597,11 @@ class SedipranoSeeder extends Seeder
                 'codigo' => '1510701323',
                 'dni' => '70498842',
                 'primer_apellido' => 'Gil',
-                'segundo_apellido' => 'ZAPATA',
+                'segundo_apellido' => 'Zapata',
                 'carrera_id' => 12, // Economia
                 'celular' => '70498842',
                 'fecha_nacimiento' => Carbon::parse('2005-05-05'),
-                'user_id' => $this->createUser('MIXIE ARLENI', 'magilza@unitru.edu.pe', null),
+                'user_id' => $this->createUser('Mixie Arleni', 'magilza@unitru.edu.pe', null),
                 'cargo_id' => 3,
                 'area_id' => 2,
                 'genero' => Genero::Femenino->value, // Usa el Enum para el género
@@ -611,12 +611,12 @@ class SedipranoSeeder extends Seeder
             [
                 'codigo' => '1011300523',
                 'dni' => '72769554',
-                'primer_apellido' => 'PLASENCIA',
-                'segundo_apellido' => 'DE LA CRUZ',
+                'primer_apellido' => 'Plasencia',
+                'segundo_apellido' => 'de la Cruz',
                 'carrera_id' => 34, // Ing Industrial
                 'celular' => '949929229',
                 'fecha_nacimiento' => Carbon::parse('2006-01-31'),
-                'user_id' => $this->createUser('NESTOR RAFAEL', 'nrplasenciade@unitru.edu.pe', null),
+                'user_id' => $this->createUser('Nestor Rafael', 'nrplasenciade@unitru.edu.pe', null),
                 'cargo_id' => 3,
                 'area_id' => 2,
                 'genero' => Genero::Masculino->value, // Usa el Enum para el género
@@ -641,12 +641,12 @@ class SedipranoSeeder extends Seeder
             [
                 'codigo' => '1451200122',
                 'dni' => '70941690',
-                'primer_apellido' => 'ALIAGA',
-                'segundo_apellido' => 'PRETELL',
+                'primer_apellido' => 'Aliaga',
+                'segundo_apellido' => 'Pretell', 
                 'carrera_id' => 25, // Fisica
                 'celular' => '928810787',
                 'fecha_nacimiento' => Carbon::parse('2004-09-22'),
-                'user_id' => $this->createUser('TATIANA YULEISY', 'taliaga@unitru.edu.pe', null),
+                'user_id' => $this->createUser('Tatiana Yuleisy', 'taliaga@unitru.edu.pe', null),
                 'cargo_id' => 3,
                 'area_id' => 2,
                 'genero' => Genero::Femenino->value, // Usa el Enum para el género
@@ -731,12 +731,12 @@ class SedipranoSeeder extends Seeder
             [
                 'codigo' => '1053703122',
                 'dni' => '74232737',
-                'primer_apellido' => 'ARROYO',
-                'segundo_apellido' => 'ESQUIVEL',
+                'primer_apellido' => 'Arroyo',
+                'segundo_apellido' => 'Esquivel',
                 'carrera_id' => 30, // Ing Ambiental
                 'celular' => '973868299',
                 'fecha_nacimiento' => Carbon::parse('2004-07-11'),
-                'user_id' => $this->createUser('BELINDA MARICIELO', 'bm.arroyoesquivel@gmail.com', null),
+                'user_id' => $this->createUser('Belinda Maricielo', 'bm.arroyoesquivel@gmail.com', null),
                 'cargo_id' => 3,
                 'area_id' => 3,
                 'genero' => Genero::Femenino->value, // Usa el Enum para el género
@@ -776,15 +776,15 @@ class SedipranoSeeder extends Seeder
             [
                 'codigo' => '1514000222',
                 'dni' => '73817362',
-                'primer_apellido' => 'ULLILÉN',
-                'segundo_apellido' => 'CHÁVEZ',
+                'primer_apellido' => 'Ullilén',
+                'segundo_apellido' => 'Chávez',
                 'carrera_id' => 30, // Ing Civil
                 'celular' => '986643843',
                 'fecha_nacimiento' => Carbon::parse('2003-05-25'),
-                'user_id' => $this->createUser('DIEGO JESÚS', 'diegoullilen250503@gmail.com', null),
+                'user_id' => $this->createUser('Diego Jesús', 'diegoullilen250503@gmail.com', null),
                 'cargo_id' => 3,
                 'area_id' => 3,
-                 'genero' => Genero::Masculino->value, // Usa el Enum para el género
+                'genero' => Genero::Masculino->value, // Usa el Enum para el género
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
@@ -836,12 +836,12 @@ class SedipranoSeeder extends Seeder
             [
                 'codigo' => '1024100421',
                 'dni' => '74540788',
-                'primer_apellido' => 'ROBLES',
-                'segundo_apellido' => 'SOLORZANO',
+                'primer_apellido' => 'Robles',
+                'segundo_apellido' => 'Solorzano',
                 'carrera_id' => 5, // Arq y Urbanismo
                 'celular' => '965207091',
                 'fecha_nacimiento' => Carbon::parse('2024-08-02'),
-                'user_id' => $this->createUser('JORDYNA', 'T1024100421@unitru.edu.pe', null),
+                'user_id' => $this->createUser('Jordyna', 'T1024100421@unitru.edu.pe', null),
                 'cargo_id' => 3,
                 'area_id' => 3,
                 'genero' => Genero::Femenino->value, // Usa el Enum para el género
@@ -881,15 +881,15 @@ class SedipranoSeeder extends Seeder
             [
                 'codigo' => '1011301422',
                 'dni' => '75857054',
-                'primer_apellido' => 'LECCA',
-                'segundo_apellido' => 'CORTEZ',
+                'primer_apellido' => 'Lecca',
+                'segundo_apellido' => 'Cortez',
                 'carrera_id' => 34, // Ing Industrial
                 'celular' => '923106748',
                 'fecha_nacimiento' => Carbon::parse('2004-10-10'),
-                'user_id' => $this->createUser('LUIS ANGEL', 'lleccac@unitru.edu.pe', null),
+                'user_id' => $this->createUser('Luis Angel', 'lleccac@unitru.edu.pe', null),
                 'cargo_id' => 3,
                 'area_id' => 3,
-                 'genero' => Genero::Masculino->value, // Usa el Enum para el género
+                'genero' => Genero::Masculino->value, // Usa el Enum para el género
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
@@ -1016,15 +1016,15 @@ class SedipranoSeeder extends Seeder
             [
                 'codigo' => '1053701023',
                 'dni' => '72533278',
-                'primer_apellido' => 'PEREDA',
-                'segundo_apellido' => 'CABANILLAS',
+                'primer_apellido' => 'Pereda',
+                'segundo_apellido' => 'Cabanillas',
                 'carrera_id' => 30, // Ing Ambiental
                 'celular' => '952428778',
                 'fecha_nacimiento' => Carbon::parse('2005-11-18'),
-                'user_id' => $this->createUser('ABEL MAXIMILIANO', 'amperedaca@unitru.edu.pe', null),
+                'user_id' => $this->createUser('Abel Maximiliano', 'amperedaca@unitru.edu.pe', null),
                 'cargo_id' => 3,
                 'area_id' => 1,
-                 'genero' => Genero::Masculino->value, // Usa el Enum para el género
+                'genero' => Genero::Masculino->value, // Usa el Enum para el género
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
@@ -1076,12 +1076,12 @@ class SedipranoSeeder extends Seeder
             [
                 'codigo' => '1511300123',
                 'dni' => '75377702',
-                'primer_apellido' => 'SÁNCHEZ',
-                'segundo_apellido' => 'CABRERA',
+                'primer_apellido' => 'Sánchez',
+                'segundo_apellido' => 'Cabrera',
                 'carrera_id' => 34, // Ing Industrial
                 'celular' => '923175367',
                 'fecha_nacimiento' => Carbon::parse('2003-02-22'),
-                'user_id' => $this->createUser('DANIEL ANGEL', 'dasanchezca@unitru.edu.pe', null),
+                'user_id' => $this->createUser('Daniel Angel', 'dasanchezca@unitru.edu.pe', null),
                 'cargo_id' => 3,
                 'area_id' => 1,
                 'genero' => Genero::Masculino->value, // Usa el Enum para el género
@@ -1121,12 +1121,12 @@ class SedipranoSeeder extends Seeder
             [
                 'codigo' => '1011300422',
                 'dni' => '73122203',
-                'primer_apellido' => 'GUTIERREZ',
-                'segundo_apellido' => 'VASQUEZ',
+                'primer_apellido' => 'Gutierrez',
+                'segundo_apellido' => 'Vasquez',
                 'carrera_id' => 34, // Ing Industrial
                 'celular' => '975685440',
                 'fecha_nacimiento' => Carbon::parse('2004-01-08'),
-                'user_id' => $this->createUser('DIEGO ALONSO', 'dgutierrezva@unitru.edu.pe', null),
+                'user_id' => $this->createUser('Diego Alonso', 'dgutierrezva@unitru.edu.pe', null),
                 'cargo_id' => 3,
                 'area_id' => 1,
                 'genero' => Genero::Masculino->value, // Usa el Enum para el género
@@ -1181,12 +1181,12 @@ class SedipranoSeeder extends Seeder
             [
                 'codigo' => '1051300621',
                 'dni' => '71467211',
-                'primer_apellido' => 'AMAYA',
-                'segundo_apellido' => 'CÁCEDA',
+                'primer_apellido' => 'Amaya',
+                'segundo_apellido' => 'Cáceda',
                 'carrera_id' => 34, // Ing Industrial
                 'celular' => '935931038',
                 'fecha_nacimiento' => Carbon::parse('2004-04-21'),
-                'user_id' => $this->createUser('LUCÍA DE FÁTIMA', 'aclucia21@gmail.com', null),
+                'user_id' => $this->createUser('Lucía de Fátima', 'aclucia21@gmail.com', null), 
                 'cargo_id' => 3,
                 'area_id' => 1,
                 'genero' => Genero::Femenino->value, // Usa el Enum para el género
@@ -1316,12 +1316,12 @@ class SedipranoSeeder extends Seeder
             [
                 'codigo' => '1052701519',
                 'dni' => '72226388',
-                'primer_apellido' => 'OSORIO',
-                'segundo_apellido' => 'TRUJILLO',
+                'primer_apellido' => 'Osorio', 
+                'segundo_apellido' => 'Trujillo',
                 'carrera_id' => 27, // NO EXISTE
                 'celular' => '997748402',
                 'fecha_nacimiento' => Carbon::parse('2000-09-09'),
-                'user_id' => $this->createUser('ANTHONY JHONATAN', 'asibernauta@gmail.com', null),
+                'user_id' => $this->createUser('Anthony Jhonatan', 'asibernauta@gmail.com', null),
                 'cargo_id' => 3,
                 'area_id' => 4,
                 'genero' => Genero::Masculino->value, // Usa el Enum para el género
