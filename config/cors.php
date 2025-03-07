@@ -3,8 +3,10 @@
 return [
     'paths' => ['api/*'],
     'allowed_methods' => ['*'],
-    'allowed_origins' => ['http://localhost:3000'],
-    //'allowed_origins' => ['http://apisvotes.eduardodevtech.com'],
+    'allowed_origins' => [
+        'http://localhost:3000',
+        'https://votaciones-ivory.vercel.app'
+    ],
     'allowed_origins_patterns' => [],
     'allowed_headers' => ['*'],
     'exposed_headers' => [],
