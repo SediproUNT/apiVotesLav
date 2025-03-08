@@ -103,7 +103,8 @@
             
             <div id="qr-resultado" class="mt-4 bg-gray-50 p-4 rounded-md hidden">
                 <h3 class="font-medium text-gray-900 mb-2">Resultado del escaneo:</h3>
-                <div id="qr-data" class="text-sm text-gray-700"></div>
+                <div id="qr-data-display" class="text-sm text-gray-700 mb-2"></div>
+                <div id="qr-code-info" class="text-xs text-gray-500 mb-3"></div>
                 <div class="mt-2 flex space-x-3">
                     <button type="button" id="registrar-asistencia" class="px-3 py-1.5 bg-morado text-white text-sm rounded-md hover:bg-morado-dark">
                         Registrar Asistencia
@@ -111,6 +112,15 @@
                     <button type="button" id="cancelar-escaneo" class="px-3 py-1.5 bg-gray-200 text-gray-700 text-sm rounded-md hover:bg-gray-300">
                         Cancelar
                     </button>
+                </div>
+            </div>
+            
+            <!-- Lista de asistencias registradas en esta sesión -->
+            <div class="mt-8 border-t border-gray-200 pt-6" id="asistencias-recientes">
+                <h3 class="font-medium text-lg mb-4">Asistencias Registradas (Sesión actual)</h3>
+                <div id="asistencias-lista" class="space-y-3">
+                    <!-- Las asistencias se añadirán aquí dinámicamente -->
+                    <p id="no-asistencias" class="text-gray-500 text-sm">No hay asistencias registradas en esta sesión</p>
                 </div>
             </div>
         </div>
@@ -154,7 +164,7 @@
                         </div>
                     </div>
                     <p class="ml-2 text-sm text-gray-700">
-                        Apunte la cámara al código QR del miembro para registrar su asistencia.
+                        Apunte la cámara al código QR del miembro conforme vayan llegando.
                     </p>
                 </div>
                 
@@ -178,10 +188,10 @@
                     </svg>
                     <div>
                         <p class="text-sm text-blue-800">
-                            Si el código QR no es detectado, intente ajustar la iluminación o la distancia.
+                            Este sistema permite tomar asistencia uno por uno conforme van llegando los participantes.
                         </p>
                         <p class="text-sm text-blue-800 mt-1">
-                            También puede registrar asistencias manualmente desde la vista de "Tomar Asistencia".
+                            La cámara seguirá activa para escanear más códigos después de cada registro.
                         </p>
                     </div>
                 </div>
@@ -197,6 +207,12 @@
     let html5QrCode;
     let qrScanned = false;
     let scannedData = null;
+    let processingQr = false;
+    let registredAttendances = [];
+    
+    // Elementos de audio
+    const successSound = document.getElementById('success-sound');
+    const errorSound = document.getElementById('error-sound');
 
     document.addEventListener('DOMContentLoaded', function() {
         const startButton = document.getElementById('start-camera');
@@ -206,7 +222,8 @@
         const cameraPreview = document.getElementById('camera-preview');
         const scanRegion = document.getElementById('scan-region');
         const qrResultado = document.getElementById('qr-resultado');
-        const qrData = document.getElementById('qr-data');
+        const qrDataDisplay = document.getElementById('qr-data-display');
+        const qrCodeInfo = document.getElementById('qr-code-info');
         const registrarBtn = document.getElementById('registrar-asistencia');
         const cancelarBtn = document.getElementById('cancelar-escaneo');
         
@@ -257,10 +274,26 @@
                 qrCodeMessage => {
                     if (!qrScanned) {
                         qrScanned = true;
-                        scannedData = qrCodeMessage;
                         
-                        // Mostrar datos del QR
-                        qrData.textContent = 'QR detectado para el miembro';
+                        try {
+                            // Intentar parsear los datos JSON del QR
+                            scannedData = JSON.parse(qrCodeMessage);
+                            
+                            // Mostrar información básica del código escaneado
+                            qrDataDisplay.textContent = `Código QR válido detectado`;
+                            qrCodeInfo.textContent = `ID: ${scannedData.id} | Código: ${scannedData.codigo}`;
+                            
+                            // Guardar el dato QR en el campo oculto (como JSON string)
+                            document.getElementById('qr_data').value = JSON.stringify(scannedData);
+                            
+                        } catch (e) {
+                            // Si no se puede parsear como JSON, puede ser otro formato
+                            scannedData = qrCodeMessage;
+                            qrDataDisplay.textContent = 'Formato de QR no reconocido';
+                            qrCodeInfo.textContent = 'El código no parece ser un QR válido de SEDIPRO';
+                            document.getElementById('qr_data').value = qrCodeMessage;
+                        }
+                        
                         qrResultado.classList.remove('hidden');
                         
                         // Parpadear el borde para indicar detección
@@ -273,9 +306,6 @@
                         if (navigator.vibrate) {
                             navigator.vibrate(200);
                         }
-                        
-                        // Guardar el dato QR en el campo oculto
-                        document.getElementById('qr_data').value = scannedData;
                     }
                 },
                 errorMessage => {
@@ -307,9 +337,69 @@
         
         // Registrar asistencia
         registrarBtn.addEventListener('click', function() {
-            if (scannedData) {
-                document.getElementById('qrForm').submit();
+            if (!scannedData) return;
+            
+            const eventoId = document.getElementById('evento_id').value;
+            if (!eventoId) {
+                alert('Por favor seleccione un evento');
+                return;
             }
+            
+            // Deshabilitamos el botón mientras se procesa
+            registrarBtn.disabled = true;
+            registrarBtn.innerHTML = 'Procesando...';
+            
+            fetch('{{ route('public.procesar-qr') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    qr_data: scannedData,
+                    evento_id: eventoId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Agregar a la lista de asistencias registradas
+                    addRegisteredAttendance({
+                        nombre: data.nombre || 'Miembro',
+                        codigo: scannedData.codigo || 'N/A',
+                        hora: new Date().toLocaleTimeString()
+                    });
+                    
+                    // Mostrar notificación
+                    const notification = document.createElement('div');
+                    notification.className = 'fixed bottom-4 right-4 bg-green-600 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3';
+                    notification.innerHTML = `
+                        <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                        <span>${data.message || '¡Asistencia registrada con éxito!'}</span>
+                    `;
+                    document.body.appendChild(notification);
+                    
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 3000);
+                } else {
+                    alert(data.message || 'Error al registrar la asistencia');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error al procesar la solicitud');
+            })
+            .finally(() => {
+                // Resetear para siguiente escaneo
+                qrScanned = false;
+                scannedData = null;
+                qrResultado.classList.add('hidden');
+                registrarBtn.disabled = false;
+                registrarBtn.innerHTML = 'Registrar Asistencia';
+            });
         });
         
         // Cancelar escaneo
@@ -318,6 +408,277 @@
             qrScanned = false;
             scannedData = null;
         });
+        
+        // Función para añadir una asistencia a la lista visual
+        function addRegisteredAttendance(attendance) {
+            registredAttendances.push(attendance);
+            
+            // Ocultar el mensaje de "no hay asistencias"
+            document.getElementById('no-asistencias').style.display = 'none';
+            
+            // Crear el elemento de la asistencia
+            const asistenciasLista = document.getElementById('asistencias-lista');
+            const asistenciaEl = document.createElement('div');
+            asistenciaEl.className = 'flex items-center justify-between bg-green-50 p-3 rounded-md border border-green-100';
+            
+            asistenciaEl.innerHTML = `
+                <div class="flex items-center">
+                    <div class="h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold mr-3">
+                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-700">${attendance.nombre}</p>
+                        <p class="text-xs text-gray-500">Código: ${attendance.codigo}</p>
+                    </div>
+                </div>
+                <div class="text-xs text-gray-500">${attendance.hora}</div>
+            `;
+            
+            // Añadir al principio de la lista
+            asistenciasLista.insertBefore(asistenciaEl, asistenciasLista.firstChild);
+        }
+
+        // Registrar asistencia automáticamente
+        function registrarAsistenciaAutomatica(qrData) {
+            const eventoId = document.getElementById('evento_id').value;
+            
+            fetch('{{ route('public.procesar-qr') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    qr_data: qrData,
+                    evento_id: eventoId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Actualizar icono y mensaje de éxito
+                    qrStatusIcon.innerHTML = `
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                    `;
+                    qrStatusIcon.className = 'h-8 w-8 mr-3 flex items-center justify-center rounded-full bg-green-100 text-green-600';
+                    qrMessage.textContent = '¡Asistencia registrada con éxito!';
+                    
+                    // Reproducir sonido de éxito
+                    successSound.play();
+                    
+                    // Agregar a la lista de asistencias registradas
+                    addRegisteredAttendance({
+                        nombre: data.nombre || 'Miembro',
+                        codigo: qrData.codigo || 'N/A',
+                        hora: new Date().toLocaleTimeString(),
+                        estado: 'success'
+                    });
+                    
+                    // Mostrar notificación
+                    mostrarNotificacion('¡Asistencia registrada con éxito!', 'success');
+                } else if (data.status === 'warning') {
+                    // Actualizar icono y mensaje de advertencia
+                    qrStatusIcon.innerHTML = `
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    `;
+                    qrStatusIcon.className = 'h-8 w-8 mr-3 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-600';
+                    qrMessage.textContent = data.message || 'Ya registrado previamente';
+                    
+                    // Reproducir sonido de error
+                    errorSound.play();
+                    
+                    // Mostrar notificación
+                    mostrarNotificacion(data.message, 'warning');
+                } else {
+                    // Actualizar icono y mensaje de error
+                    qrStatusIcon.innerHTML = `
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    `;
+                    qrStatusIcon.className = 'h-8 w-8 mr-3 flex items-center justify-center rounded-full bg-red-100 text-red-600';
+                    qrMessage.textContent = data.message || 'Error al registrar asistencia';
+                    
+                    // Reproducir sonido de error
+                    errorSound.play();
+                    
+                    // Mostrar notificación
+                    mostrarNotificacion(data.message || 'Error al registrar asistencia', 'error');
+                }
+                
+                // Limpiar después de unos segundos para escanear el siguiente
+                setTimeout(() => {
+                    qrResultado.classList.add('hidden');
+                    qrScanned = false;
+                    processingQr = false;
+                }, 3000);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                qrStatusIcon.innerHTML = `
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                `;
+                qrStatusIcon.className = 'h-8 w-8 mr-3 flex items-center justify-center rounded-full bg-red-100 text-red-600';
+                qrMessage.textContent = 'Error de conexión';
+                
+                // Reproducir sonido de error
+                errorSound.play();
+                
+                // Limpiar después de unos segundos
+                setTimeout(() => {
+                    qrResultado.classList.add('hidden');
+                    qrScanned = false;
+                    processingQr = false;
+                }, 3000);
+            });
+        }
+        
+        // Registro manual individual
+        registrarManualBtn.addEventListener('click', function() {
+            const eventoId = document.getElementById('evento_id').value;
+            if (!eventoId) {
+                alert('Por favor seleccione un evento');
+                return;
+            }
+            
+            const codigoODni = document.getElementById('manual_sediprano').value;
+            if (!codigoODni) {
+                alert('Ingrese un código o DNI válido');
+                return;
+            }
+            
+            const estado = document.getElementById('manual_estado').value;
+            const observacion = document.getElementById('manual_observacion').value;
+            
+            // Deshabilitar el botón mientras se procesa
+            registrarManualBtn.disabled = true;
+            registrarManualBtn.innerText = 'Procesando...';
+            
+            fetch('{{ route('public.registrar-manual') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    evento_id: eventoId,
+                    codigo_dni: codigoODni,
+                    estado: estado,
+                    observacion: observacion
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    // Actualizar la lista de asistencias registradas
+                    addRegisteredAttendance({
+                        nombre: data.nombre || 'Miembro',
+                        codigo: codigoODni,
+                        hora: new Date().toLocaleTimeString(),
+                        estado: 'success'
+                    });
+                    
+                    // Notificación
+                    mostrarNotificacion('Asistencia registrada con éxito', 'success');
+                    
+                    // Limpiar formulario
+                    document.getElementById('manual_sediprano').value = '';
+                    document.getElementById('manual_observacion').value = '';
+                    
+                    // Reproducir sonido de éxito
+                    successSound.play();
+                } else {
+                    // Notificación
+                    mostrarNotificacion(data.message || 'Error al registrar asistencia', 'error');
+                    
+                    // Reproducir sonido de error
+                    errorSound.play();
+                }
+            })
+            .catch(error => {
+                // Notificación
+                mostrarNotificacion('Error de conexión: ' + error.message, 'error');
+                
+                // Reproducir sonido de error
+                errorSound.play();
+            })
+            .finally(() => {
+                registrarManualBtn.disabled = false;
+                registrarManualBtn.innerText = 'Registrar Asistencia Manual';
+            });
+        });
+        
+        // Función para agregar asistencia registrada a la lista
+        function addRegisteredAttendance(attendance) {
+            // Eliminar el mensaje "no hay asistencias"
+            const noAsistencias = document.getElementById('no-asistencias');
+            if (noAsistencias) {
+                noAsistencias.style.display = 'none';
+            }
+            
+            // Crear nuevo elemento de asistencia
+            const asistenciasLista = document.getElementById('asistencias-lista');
+            const asistenciaEl = document.createElement('div');
+            
+            asistenciaEl.className = 'bg-green-50 border border-green-100 rounded-md p-3 flex justify-between items-center';
+            asistenciaEl.innerHTML = `
+                <div class="flex items-center">
+                    <div class="bg-green-100 rounded-full h-10 w-10 flex items-center justify-center mr-3">
+                        <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-900">${attendance.nombre}</p>
+                        <p class="text-sm text-gray-500">Código: ${attendance.codigo}</p>
+                    </div>
+                </div>
+                <div class="text-sm text-gray-500">
+                    ${attendance.hora}
+                </div>
+            `;
+            
+            // Añadir al inicio de la lista
+            if (asistenciasLista.firstChild) {
+                asistenciasLista.insertBefore(asistenciaEl, asistenciasLista.firstChild);
+            } else {
+                asistenciasLista.appendChild(asistenciaEl);
+            }
+            
+            // Guardar en la lista
+            registredAttendances.push(attendance);
+        }
+        
+        // Función para mostrar notificaciones
+        function mostrarNotificacion(mensaje, tipo) {
+            const notificacion = document.createElement('div');
+            let bgcolor = 'bg-blue-500';
+            
+            if (tipo === 'success') bgcolor = 'bg-green-500';
+            else if (tipo === 'error') bgcolor = 'bg-red-500';
+            else if (tipo === 'warning') bgcolor = 'bg-yellow-500';
+            
+            notificacion.className = `${bgcolor} text-white py-2 px-4 rounded-md shadow-lg`;
+            notificacion.style.position = 'fixed';
+            notificacion.style.bottom = '20px';
+            notificacion.style.right = '20px';
+            notificacion.style.zIndex = '50';
+            notificacion.textContent = mensaje;
+            
+            document.body.appendChild(notificacion);
+            
+            setTimeout(() => {
+                notificacion.remove();
+            }, 3000);
+        }
     });
 </script>
 @endpush

@@ -44,6 +44,9 @@
                             <a href="{{ route('public.eventos') }}" class="border-transparent text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium {{ request()->routeIs('public.eventos*') ? 'border-azul text-azul' : '' }}">
                                 Eventos
                             </a>
+                            <a href="{{ route('panel.votaciones.index') }}" class="border-transparent text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium {{ request()->routeIs('panel.votaciones.*') ? 'border-azul text-azul' : '' }}">
+                                Votaciones
+                            </a>
                         </div>
                     </div>
                     <div class="hidden sm:ml-6 sm:flex sm:items-center">
@@ -90,6 +93,9 @@
                     </a>
                     <a href="{{ route('public.eventos') }}" class="text-gray-600 hover:bg-gray-50 hover:text-azul block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('public.eventos*') ? 'border-azul text-azul bg-azul/5' : 'border-transparent' }} text-base font-medium">
                         Eventos
+                    </a>
+                    <a href="{{ route('panel.votaciones.index') }}" class="text-gray-600 hover:bg-gray-50 hover:text-azul block pl-3 pr-4 py-2 border-l-4 {{ request()->routeIs('panel.votaciones.*') ? 'border-azul text-azul bg-azul/5' : 'border-transparent' }} text-base font-medium">
+                        Votaciones
                     </a>
                     <div class="border-t border-gray-200 pt-4">
                         <div class="px-2 space-y-1">

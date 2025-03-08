@@ -22,17 +22,17 @@ class EventoSeeder extends Seeder
                 'hora_inicio' => '15:30',
                 'hora_fin' => '16:00',
                 'estado' => 'programado',
-                'ubicacion' => 'Auditorio'
+                'ubicacion' => 'Paraninfo Institucional” de Local Central de la UNT'
             ],
-            [
-                'nombre' => 'Evento Prueba',
-                'descripcion' => 'Descripción del evento',
-                'fecha' => now()->format('Y-m-d'),
-                'hora_inicio' => now()->format('H:i'),
-                'hora_fin' => now()->addHours(4)->format('H:i'),
-                'estado' => 'en_curso',
-                'ubicacion' => 'Local'
-            ],
+            // [
+            //     'nombre' => 'Evento Prueba',
+            //     'descripcion' => 'Descripción del evento',
+            //     'fecha' => now()->format('Y-m-d'),
+            //     'hora_inicio' => now()->format('H:i'),
+            //     'hora_fin' => now()->addHours(4)->format('H:i'),
+            //     'estado' => 'en_curso',
+            //     'ubicacion' => 'Local'
+            // ],
         ];
 
         foreach ($eventos as $evento) {

@@ -63,9 +63,12 @@ class VotacionAccesoController extends Controller
                 ->first();
 
             if ($proximaVotacion) {
+                $fechaFormateada = \Carbon\Carbon::parse($proximaVotacion->fecha)->format('d/m/Y');
+                $horaFormateada = substr($proximaVotacion->hora_inicio, 0, 5); // Solo toma HH:mm
+                
                 return response()->json([
                     'status' => 'error',
-                    'message' => "La votación comenzará el {$proximaVotacion->fecha} a las {$proximaVotacion->hora_inicio}"
+                    'message' => "La votación comenzará el {$fechaFormateada} a las {$horaFormateada}"
                 ], 404);
             }
 
@@ -245,6 +248,27 @@ class VotacionAccesoController extends Controller
                 'status' => 'error',
                 'message' => 'Error al registrar los votos: ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function index()
+    {
+        $ahora = now();
+        $votacion = Votacion::where(function($query) use ($ahora) {
+            $query->where('fecha', $ahora->toDateString())
+                  ->where('hora_inicio', '<=', $ahora->format('H:i:s'))
+                  ->where('hora_fin', '>', $ahora->format('H:i:s'));
+        })->first();
+
+        if ($votacion) {
+            return view('votacion.acceso', [
+                'votacion' => [
+                    'fecha' => \Carbon\Carbon::parse($votacion->fecha)->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY'),
+                    'hora_inicio' => $votacion->hora_inicio,
+                    'hora_fin' => $votacion->hora_fin,
+                    'name' => $votacion->name
+                ]
+            ]);
         }
     }
 }

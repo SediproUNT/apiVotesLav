@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use App\Enums\EstadoEvento;
 
 class PublicPanelController extends Controller
 {
@@ -64,6 +65,13 @@ class PublicPanelController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(10);
         
+        // Si es una solicitud AJAX, devolver solo los datos
+        if (request()->ajax()) {
+            return response()->json([
+                'asistencias' => $asistencias
+            ]);
+        }
+        
         return view('public.asistencias', compact('asistencias', 'eventos'));
     }
 
@@ -80,7 +88,27 @@ class PublicPanelController extends Controller
 
     public function eventos()
     {
-        $eventos = Evento::orderBy('fecha', 'desc')->paginate(15);
+        $eventos = Evento::orderBy('fecha', 'desc')
+            ->paginate(10) // Cambiar get() por paginate() y especificar número de items por página
+            ->through(function($evento) {
+                // Actualizar el estado basado en la fecha/hora
+                $ahora = now();
+                $fechaHoraInicio = Carbon::parse($evento->fecha . ' ' . $evento->hora_inicio);
+                $fechaHoraFin = Carbon::parse($evento->fecha . ' ' . $evento->hora_fin);
+
+                if ($evento->estado === EstadoEvento::Programado->value) {
+                    if ($ahora->between($fechaHoraInicio, $fechaHoraFin)) {
+                        $evento->update(['estado' => EstadoEvento::EnCurso->value]);
+                    }
+                } elseif ($evento->estado === EstadoEvento::EnCurso->value) {
+                    if ($ahora->isAfter($fechaHoraFin)) {
+                        $evento->update(['estado' => EstadoEvento::Finalizado->value]);
+                    }
+                }
+
+                return $evento;
+            });
+
         return view('public.eventos', compact('eventos'));
     }
 
@@ -302,7 +330,8 @@ class PublicPanelController extends Controller
         
         // Obtener las asistencias ya registradas para este evento
         $asistenciasRegistradas = Asistencia::where('evento_id', $eventoId)
-            ->pluck('sediprano_id')
+            ->get()
+            ->keyBy('sediprano_id')
             ->toArray();
             
         return view('public.tomar-asistencia', compact('evento', 'sedipranos', 'asistenciasRegistradas'));
@@ -347,6 +376,130 @@ class PublicPanelController extends Controller
         }
     }
     
+    public function registrarAsistenciaIndividual(Request $request, $eventoId)
+    {
+        try {
+            $request->validate([
+                'sediprano_id' => 'required|exists:sedipranos,id',
+                'estado' => 'required|in:presente,tardanza,falta',
+                'observacion' => 'nullable|string'
+            ]);
+            
+            $evento = Evento::findOrFail($eventoId);
+            $sediprano = Sediprano::with('user')->findOrFail($request->sediprano_id);
+            $ahora = now();
+            
+            // Verificar si ya existe una asistencia para este evento/sediprano
+            $asistenciaExistente = Asistencia::where('evento_id', $eventoId)
+                ->where('sediprano_id', $request->sediprano_id)
+                ->first();
+                
+            if ($asistenciaExistente) {
+                // Actualizar la asistencia existente
+                $asistenciaExistente->update([
+                    'estado' => $request->estado,
+                    'observacion' => $request->observacion,
+                ]);
+                
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Asistencia actualizada con éxito',
+                    'asistencia' => $asistenciaExistente,
+                    'nombre' => $sediprano->user->name,
+                    'codigo' => $sediprano->codigo
+                ]);
+            }
+            
+            // Crear nueva asistencia
+            $asistencia = Asistencia::create([
+                'evento_id' => $eventoId,
+                'sediprano_id' => $request->sediprano_id,
+                'hora_registro' => $ahora,
+                'estado' => $request->estado,
+                'observacion' => $request->observacion ?? 'Registro manual individual'
+            ]);
+            
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Asistencia registrada con éxito',
+                'asistencia' => $asistencia,
+                'nombre' => $sediprano->user->name,
+                'codigo' => $sediprano->codigo
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al registrar asistencia: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
+    // Método para registrar asistencias manualmente de forma individual - MANTENER ESTA VERSIÓN
+    public function registrarManual(Request $request)
+    {
+        try {
+            $request->validate([
+                'evento_id' => 'required|exists:eventos,id',
+                'codigo_dni' => 'required|string',
+                'estado' => 'required|in:presente,tardanza,falta',
+                'observacion' => 'nullable|string'
+            ]);
+
+            // Buscar sediprano por código o DNI
+            $sediprano = Sediprano::where('codigo', $request->codigo_dni)
+                ->orWhere('dni', $request->codigo_dni)
+                ->with('user')
+                ->first();
+
+            if (!$sediprano) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'No se encontró ningún miembro con ese código o DNI'
+                ], 404);
+            }
+
+            // Verificar si ya existe una asistencia para este evento/sediprano
+            $asistenciaExistente = Asistencia::where('evento_id', $request->evento_id)
+                ->where('sediprano_id', $sediprano->id)
+                ->first();
+
+            if ($asistenciaExistente) {
+                $asistenciaExistente->update([
+                    'estado' => $request->estado,
+                    'observacion' => $request->observacion ?? 'Registro manual actualizado'
+                ]);
+
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Asistencia actualizada con éxito para ' . $sediprano->user->name,
+                    'nombre' => $sediprano->user->name,
+                    'codigo' => $sediprano->codigo
+                ]);
+            }
+
+            // Crear nueva asistencia
+            $asistencia = Asistencia::create([
+                'evento_id' => $request->evento_id,
+                'sediprano_id' => $sediprano->id,
+                'hora_registro' => now(),
+                'estado' => $request->estado,
+                'observacion' => $request->observacion ?? 'Registro manual individual'
+            ]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Asistencia registrada con éxito para ' . $sediprano->user->name,
+                'nombre' => $sediprano->user->name,
+                'codigo' => $sediprano->codigo
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al registrar asistencia: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    
     public function escanearQR()
     {
         $eventos = Evento::where('estado', 'en_curso')
@@ -363,20 +516,23 @@ class PublicPanelController extends Controller
             
         return view('public.escanear-qr', compact('eventos'));
     }
-    
+
     public function procesarQR(Request $request)
     {
         $request->validate([
-            'qr_data' => 'required|string',
+            'qr_data' => 'required',
             'evento_id' => 'required|exists:eventos,id'
         ]);
         
         try {
-            // Decodificar datos del QR
-            $qrData = json_decode(base64_decode($request->qr_data), true);
+            // Obtenemos los datos del QR, pueden venir como string o ya como array
+            $qrData = is_array($request->qr_data) ? $request->qr_data : json_decode($request->qr_data, true);
             
-            if (!isset($qrData['id']) || !isset($qrData['token']) || !isset($qrData['timestamp']) || !isset($qrData['signature'])) {
-                throw new \Exception('QR inválido: datos incompletos');
+            if (!$qrData || !isset($qrData['id']) || !isset($qrData['token']) || !isset($qrData['timestamp']) || !isset($qrData['signature'])) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'QR inválido: datos incompletos'
+                ], 400);
             }
             
             // Obtener el sediprano
@@ -388,12 +544,18 @@ class PublicPanelController extends Controller
             // Verificar HMAC
             $expectedHmac = hash_hmac('sha256', json_encode($qrBaseData), $sediprano->secret_key);
             if (!hash_equals($expectedHmac, $qrData['signature'])) {
-                throw new \Exception('QR inválido: firma no coincide');
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'QR inválido: firma no coincide'
+                ], 400);
             }
             
             // Verificar token
             if ($sediprano->token !== $qrData['token']) {
-                throw new \Exception('QR inválido: token no coincide');
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'QR inválido: token no coincide'
+                ], 400);
             }
             
             // Verificar si ya existe una asistencia para este evento/sediprano
@@ -402,7 +564,11 @@ class PublicPanelController extends Controller
                 ->first();
                 
             if ($asistenciaExistente) {
-                return redirect()->back()->with('warning', 'Este miembro ya registró su asistencia para este evento');
+                return response()->json([
+                    'status' => 'warning',
+                    'message' => 'Este miembro ya registró su asistencia para este evento',
+                    'nombre' => $sediprano->user->name
+                ], 200);
             }
             
             // Registrar asistencia
@@ -421,9 +587,17 @@ class PublicPanelController extends Controller
                 'observacion' => 'Registro por escaneo QR'
             ]);
             
-            return redirect()->back()->with('success', 'Asistencia registrada con éxito para ' . $sediprano->user->name);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Asistencia registrada con éxito',
+                'nombre' => $sediprano->user->name,
+                'codigo' => $sediprano->codigo
+            ], 200);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error al procesar QR: ' . $e->getMessage());
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al procesar QR: ' . $e->getMessage()
+            ], 500);
         }
     }
 }

@@ -85,17 +85,21 @@
                         {{ $evento->lugar ?? 'No especificado' }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        @if($evento->estado == 'en_curso')
+                        @if($evento->estado == 'programado')
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                Programado
+                            </span>
+                        @elseif($evento->estado == 'en_curso')
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
                                 En curso
                             </span>
-                        @elseif($evento->estado == 'pendiente')
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                Pendiente
-                            </span>
-                        @else
+                        @elseif($evento->estado == 'finalizado')
                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800">
                                 Finalizado
+                            </span>
+                        @elseif($evento->estado == 'cancelado')
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                Cancelado
                             </span>
                         @endif
                     </td>
@@ -150,7 +154,10 @@
     
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         @php
-            $proximosEventos = $eventos->where('estado', 'pendiente')->take(3);
+            $proximosEventos = App\Models\Evento::where('estado', 'programado')
+                ->orderBy('fecha')
+                ->take(3)
+                ->get();
         @endphp
         
         @forelse($proximosEventos as $evento)

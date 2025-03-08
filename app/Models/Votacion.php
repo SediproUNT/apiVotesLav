@@ -14,6 +14,7 @@ class Votacion extends Model
     protected $table = 'votaciones';
 
     protected $fillable = [
+        'name',
         'fecha',
         'hora_inicio',
         'hora_fin',

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WebVotacionController;
 use App\Http\Controllers\PublicPanelController;
+use App\Http\Controllers\VotacionPanelController;
 
 Route::get('/', function () {
     return redirect()->route('votacion.index');
@@ -13,6 +14,11 @@ Route::get('/votacion', [WebVotacionController::class, 'index'])->name('votacion
 Route::post('/votacion/validar', [WebVotacionController::class, 'validar'])->name('votacion.validar');
 Route::get('/emitir-voto', [WebVotacionController::class, 'mostrarVotacion'])->name('votacion.emitir');
 Route::post('/votacion/procesar', [WebVotacionController::class, 'procesarVoto'])->name('votacion.procesar');
+
+// Rutas para el CRUD de votaciones en el panel
+Route::prefix('panel')->name('panel.')->group(function() {
+    Route::resource('votaciones', VotacionPanelController::class);
+});
 
 // Rutas públicas para el panel de SEDIPRO y asistencias
 Route::prefix('panel-publico')->group(function () {
@@ -41,6 +47,8 @@ Route::prefix('panel-publico')->group(function () {
     Route::get('/asistencias/evento/{eventoId}', [PublicPanelController::class, 'asistenciasPorEvento'])->name('public.asistencias.evento');
     Route::get('/tomar-asistencia/{eventoId}', [PublicPanelController::class, 'tomarAsistencia'])->name('public.tomar-asistencia');
     Route::post('/registrar-asistencia/{eventoId}', [PublicPanelController::class, 'registrarAsistencia'])->name('public.registrar-asistencia');
+    Route::post('/registrar-asistencia-individual/{eventoId}', [PublicPanelController::class, 'registrarAsistenciaIndividual'])->name('public.registrar-asistencia-individual');
     Route::get('/escanear-qr', [PublicPanelController::class, 'escanearQR'])->name('public.escanear-qr');
     Route::post('/procesar-qr', [PublicPanelController::class, 'procesarQR'])->name('public.procesar-qr');
+    Route::post('/registrar-manual', [PublicPanelController::class, 'registrarManual'])->name('public.registrar-manual');
 });

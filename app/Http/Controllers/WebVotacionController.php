@@ -54,9 +54,12 @@ class WebVotacionController extends Controller
                 ->first();
 
             if ($proximaVotacion) {
+                $fechaFormateada = \Carbon\Carbon::parse($proximaVotacion->fecha)->format('d/m/Y');
+                $horaFormateada = substr($proximaVotacion->hora_inicio, 0, 5);
+                
                 return response()->json([
                     'status' => 'error',
-                    'message' => "La votación comenzará el {$proximaVotacion->fecha} a las {$proximaVotacion->hora_inicio}"
+                    'message' => "La votación comenzará el {$fechaFormateada} a las {$horaFormateada}"
                 ], 404);
             }
 

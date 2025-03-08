@@ -147,9 +147,12 @@ class VotacionController extends Controller
             ->first();
 
         if ($proximaVotacion) {
+            $fechaFormateada = \Carbon\Carbon::parse($proximaVotacion->fecha)->format('d/m/Y');
+            $horaFormateada = substr($proximaVotacion->hora_inicio, 0, 5);
+            
             return response()->json([
                 'estado' => 'pendiente',
-                'mensaje' => "La próxima votación comenzará el {$proximaVotacion->fecha} a las {$proximaVotacion->hora_inicio}",
+                'mensaje' => "La próxima votación comenzará el {$fechaFormateada} a las {$horaFormateada}",
                 'votacion' => $proximaVotacion
             ]);
         }
