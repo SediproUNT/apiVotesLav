@@ -26,6 +26,7 @@ Route::post('sedipranos/validate-qr', [SedipranoController::class, 'validateQr']
 // Rutas para el proceso de votación
 Route::post('/votacion/validar-acceso', [VotacionAccesoController::class, 'validarAcceso']);
 Route::post('/votacion/emitir-voto', [VotacionAccesoController::class, 'emitirVoto']);
+Route::get('/votaciones/estado', [VotacionController::class, 'getEstadoVotaciones']); // Nueva ruta para comprobar el estado de las votaciones
 
 // Rutas públicas para asistencias
 Route::post('/asistencias/registrar', [AsistenciaController::class, 'registrarAsistencia']);
