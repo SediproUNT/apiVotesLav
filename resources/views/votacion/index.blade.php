@@ -8,6 +8,19 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://unpkg.com/nprogress@0.2.0/nprogress.css" rel="stylesheet" />
     <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        azulOscuro: '#292d66',
+                        azul: '#3154a2',
+                        morado: '#672577',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body class="h-full bg-gray-50">
     <div class="min-h-screen flex items-center justify-center px-4">
@@ -15,7 +28,7 @@
             <!-- Logo y título -->
             <div class="flex flex-col items-center mb-8">
                 <img src="https://storage.googleapis.com/imagenes_bananos/votes/logos/logo-sedipro.png" alt="SEDIPRO" class="h-[60px] w-auto mb-6"/>
-                <h1 class="text-2xl font-bold text-[#333333]">
+                <h1 class="text-2xl font-bold text-azulOscuro">
                     Sistema de Votación
                 </h1>
             </div>
@@ -28,7 +41,7 @@
                     </label>
                     <input type="number" id="codigo" name="codigo"
                         class="w-full h-12 px-4 text-base border border-[#D1D5DB] rounded-md 
-                               focus:outline-none focus:ring-2 focus:ring-[#6C5CE7] focus:border-[#6C5CE7]
+                               focus:outline-none focus:ring-2 focus:ring-morado focus:border-morado
                                transition duration-150 ease-in-out"
                         required>
                 </div>
@@ -39,14 +52,14 @@
                     </label>
                     <input type="text" id="dni" name="dni" maxlength="8"
                         class="w-full h-12 px-4 text-base border border-[#D1D5DB] rounded-md
-                               focus:outline-none focus:ring-2 focus:ring-[#6C5CE7] focus:border-[#6C5CE7]
+                               focus:outline-none focus:ring-2 focus:ring-morado focus:border-morado
                                transition duration-150 ease-in-out"
                         required>
                 </div>
 
                 <button type="submit" 
-                    class="w-full h-[50px] bg-[#6C5CE7] text-white rounded-md
-                           hover:bg-[#5A4BD3] focus:outline-none focus:ring-2 focus:ring-[#6C5CE7]/50
+                    class="w-full h-[50px] bg-azul text-white rounded-md
+                           hover:bg-azul-dark focus:outline-none focus:ring-2 focus:ring-azul/50
                            transition duration-150 ease-in-out flex items-center justify-center gap-2
                            disabled:opacity-50 disabled:cursor-not-allowed mt-6">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -113,21 +113,21 @@ class SedipranoSeeder extends Seeder
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
-            [
-                'codigo' => '1054000920',
-                'dni' => '70986876',
-                'primer_apellido' => 'Sanchez',
-                'segundo_apellido' => 'Palacios',
-                'carrera_id' => 30,  // Ingenieria Civil
-                'celular' => '964916454',
-                'fecha_nacimiento' => Carbon::parse('2001-06-08'),
-                'user_id' => $this->createUser('Fernando', 't054000920@unitru.edu.pe', null),
-                'cargo_id' => 3,
-                'area_id' => 5,
-                'genero' => Genero::Masculino->value, // Usa el Enum para el género
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
+            // [
+            //     'codigo' => '1054000920',
+            //     'dni' => '70986876',
+            //     'primer_apellido' => 'Sanchez',
+            //     'segundo_apellido' => 'Palacios',
+            //     'carrera_id' => 30,  // Ingenieria Civil
+            //     'celular' => '964916454',
+            //     'fecha_nacimiento' => Carbon::parse('2001-06-08'),
+            //     'user_id' => $this->createUser('Fernando', 't054000920@unitru.edu.pe', null),
+            //     'cargo_id' => 3,
+            //     'area_id' => 5,
+            //     'genero' => Genero::Masculino->value, // Usa el Enum para el género
+            //     'created_at' => Carbon::now(),
+            //     'updated_at' => Carbon::now(),
+            // ],
             [
                 'codigo' => '1051500121',
                 'dni' => '73479500',
@@ -278,21 +278,21 @@ class SedipranoSeeder extends Seeder
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
-            [
-                'codigo' => '1514100724',
-                'dni' => '71101729',
-                'primer_apellido' => 'Gamboa',
-                'segundo_apellido' => 'Gonzáles',
-                'carrera_id' => 5,  // Arq
-                'celular' => '976296032',
-                'fecha_nacimiento' => Carbon::parse('2005-12-08'),
-                'user_id' => $this->createUser('Rodrigo Marcial', 'rodrigogg0812@gmail.com', null),
-                'cargo_id' => 3,
-                'area_id' => 5,
-                 'genero' => Genero::Masculino->value, // Usa el Enum para el género
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
+            // [
+            //     'codigo' => '1514100724',
+            //     'dni' => '71101729',
+            //     'primer_apellido' => 'Gamboa',
+            //     'segundo_apellido' => 'Gonzáles',
+            //     'carrera_id' => 5,  // Arq
+            //     'celular' => '976296032',
+            //     'fecha_nacimiento' => Carbon::parse('2005-12-08'),
+            //     'user_id' => $this->createUser('Rodrigo Marcial', 'rodrigogg0812@gmail.com', null),
+            //     'cargo_id' => 3,
+            //     'area_id' => 5,
+            //      'genero' => Genero::Masculino->value, // Usa el Enum para el género
+            //     'created_at' => Carbon::now(),
+            //     'updated_at' => Carbon::now(),
+            // ],
             [
                 'codigo' => '1510100922',
                 'dni' => '75340255',
@@ -1028,21 +1028,21 @@ class SedipranoSeeder extends Seeder
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
-            [
-                'codigo' => '1051300222',
-                'dni' => '72560073',
-                'primer_apellido' => 'Velarde',
-                'segundo_apellido' => 'Escobar',
-                'carrera_id' => 34, // Ing Industrial
-                'celular' => '904468591',
-                'fecha_nacimiento' => Carbon::parse('2000-05-24'),
-                'user_id' => $this->createUser('Alexandra Brighit', 'avelarde@unitru.edu.pe', null),
-                'cargo_id' => 3,
-                'area_id' => 1,
-                'genero' => Genero::Femenino->value, // Usa el Enum para el género
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
+            // [
+            //     'codigo' => '1051300222',
+            //     'dni' => '72560073',
+            //     'primer_apellido' => 'Velarde',
+            //     'segundo_apellido' => 'Escobar',
+            //     'carrera_id' => 34, // Ing Industrial
+            //     'celular' => '904468591',
+            //     'fecha_nacimiento' => Carbon::parse('2000-05-24'),
+            //     'user_id' => $this->createUser('Alexandra Brighit', 'avelarde@unitru.edu.pe', null),
+            //     'cargo_id' => 3,
+            //     'area_id' => 1,
+            //     'genero' => Genero::Femenino->value, // Usa el Enum para el género
+            //     'created_at' => Carbon::now(),
+            //     'updated_at' => Carbon::now(),
+            // ],
             [
                 'codigo' => '1020101424',
                 'dni' => '77511764',
@@ -1298,21 +1298,21 @@ class SedipranoSeeder extends Seeder
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
-            [
-                'codigo' => '1053300720',
-                'dni' => '72947835',
-                'primer_apellido' => 'Cruz',
-                'segundo_apellido' => 'Ulloa',
-                'carrera_id' => 33, // Ing Sistemas
-                'celular' => '994054491',
-                'fecha_nacimiento' => Carbon::parse('1999-03-12'),
-                'user_id' => $this->createUser('Anahy Estrella', 't053300720@unitru.edu.pe', null),
-                'cargo_id' => 3,
-                'area_id' => 4,
-                'genero' => Genero::Femenino->value, // Usa el Enum para el género
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
-            ],
+            // [
+            //     'codigo' => '1053300720',
+            //     'dni' => '72947835',
+            //     'primer_apellido' => 'Cruz',
+            //     'segundo_apellido' => 'Ulloa',
+            //     'carrera_id' => 33, // Ing Sistemas
+            //     'celular' => '994054491',
+            //     'fecha_nacimiento' => Carbon::parse('1999-03-12'),
+            //     'user_id' => $this->createUser('Anahy Estrella', 't053300720@unitru.edu.pe', null),
+            //     'cargo_id' => 3,
+            //     'area_id' => 4,
+            //     'genero' => Genero::Femenino->value, // Usa el Enum para el género
+            //     'created_at' => Carbon::now(),
+            //     'updated_at' => Carbon::now(),
+            // ],
             [
                 'codigo' => '1052701519',
                 'dni' => '72226388',
