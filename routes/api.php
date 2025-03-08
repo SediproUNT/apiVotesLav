@@ -48,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('areas', AreaController::class);
     Route::apiResource('users', UserController::class);
     Route::apiResource('sedipranos', SedipranoController::class);
+    Route::get('sedipranos-with-relations', [SedipranoController::class, 'getSedipranosWithRelations']);
     Route::post('sedipranos/{id}/generate-qr', [SedipranoController::class, 'generateQrCode']);
     Route::apiResource('cargos', CargoController::class);
     Route::apiResource('carreras', CarreraController::class);

@@ -347,4 +347,23 @@ class SedipranoController extends Controller
             ], 400);
         }
     }
+
+    public function getSedipranosWithRelations()
+    {
+        try {
+            $sedipranos = Sediprano::with(['area', 'cargo', 'user', 'carrera'])
+                ->orderBy('created_at', 'desc')
+                ->get();
+                
+            return response()->json([
+                'status' => 'success',
+                'data' => $sedipranos
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error al obtener los sedipranos: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

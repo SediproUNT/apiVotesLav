@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Cargo;
@@ -10,11 +11,15 @@ use App\Models\Area;
 
 class Sediprano extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
-        'codigo', 'dni', 'primer_apellido', 'segundo_apellido',
-        'carrera_id', 'genero', 'celular', 'fecha_nacimiento', 'user_id',
-        'cargo_id', 'area_id', 'qr_code', 'qr_path', 'secret_key', 'token',
-        'qr_hash'
+        'user_id',
+        'area_id',
+        'cargo_id',
+        'carrera_id',
+        'codigo_qr',
+        'estado'
     ];
 
     protected $casts = [

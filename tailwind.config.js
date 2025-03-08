@@ -3,8 +3,6 @@ import defaultTheme from 'tailwindcss/defaultTheme';
 /** @type {import('tailwindcss').Config} */
 export default {
     content: [
-        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
-        './storage/framework/views/*.php',
         './resources/**/*.blade.php',
         './resources/**/*.js',
         './resources/**/*.vue',
@@ -14,7 +12,23 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                primary: {
+                    DEFAULT: '#0f172a',
+                    foreground: '#ffffff',
+                },
+                destructive: {
+                    DEFAULT: '#ef4444',
+                    foreground: '#ffffff',
+                },
+                muted: {
+                    DEFAULT: '#f1f5f9',
+                    foreground: '#64748b',
+                },
+            },
         },
     },
-    plugins: [],
+    plugins: [
+        require('@tailwindcss/forms'),
+    ],
 };
