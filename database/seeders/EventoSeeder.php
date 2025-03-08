@@ -19,8 +19,8 @@ class EventoSeeder extends Seeder
                 'nombre' => 'Elecciones Sedipranas 2025',
                 'descripcion' => 'Elecciones de representantes de Sedipranos 2025',
                 'fecha' => '2025-03-08',
-                'hora_inicio' => '15:00',
-                'hora_fin' => '15:30',
+                'hora_inicio' => '15:30',
+                'hora_fin' => '16:00',
                 'estado' => 'programado',
                 'ubicacion' => 'Auditorio'
             ],

@@ -113,4 +113,50 @@ class VotacionController extends Controller
             'message' => 'Votación eliminada exitosamente'
         ]);
     }
+
+    public function getEstadoVotaciones()
+    {
+        $ahora = now();
+        $votacion = Votacion::where(function($query) use ($ahora) {
+            $query->where('fecha', $ahora->toDateString())
+                  ->where('hora_inicio', '<=', $ahora->format('H:i:s'))
+                  ->where('hora_fin', '>', $ahora->format('H:i:s'));
+        })->first();
+
+        if ($votacion) {
+            $votacion->actualizarEstadoAutomatico();
+            $votacion->refresh();
+            
+            return response()->json([
+                'estado' => 'activa',
+                'mensaje' => 'Hay una votación en curso',
+                'votacion' => $votacion
+            ]);
+        }
+
+        $proximaVotacion = Votacion::where('estado', EstadoVotacion::Pendiente)
+            ->where(function($query) use ($ahora) {
+                $query->where('fecha', '>', $ahora->toDateString())
+                    ->orWhere(function($q) use ($ahora) {
+                        $q->where('fecha', $ahora->toDateString())
+                           ->where('hora_inicio', '>', $ahora->format('H:i:s'));
+                    });
+            })
+            ->orderBy('fecha')
+            ->orderBy('hora_inicio')
+            ->first();
+
+        if ($proximaVotacion) {
+            return response()->json([
+                'estado' => 'pendiente',
+                'mensaje' => "La próxima votación comenzará el {$proximaVotacion->fecha} a las {$proximaVotacion->hora_inicio}",
+                'votacion' => $proximaVotacion
+            ]);
+        }
+
+        return response()->json([
+            'estado' => 'finalizada',
+            'mensaje' => 'No hay votaciones programadas'
+        ]);
+    }
 }

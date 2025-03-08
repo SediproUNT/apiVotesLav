@@ -14,7 +14,7 @@
         <div class="w-full max-w-[450px] bg-white border border-[#E5E7EB] rounded-lg shadow-lg p-8">
             <!-- Logo y título -->
             <div class="flex flex-col items-center mb-8">
-                <img src="{{ asset('img/logo-sedipro.png') }}" alt="SEDIPRO" class="h-[60px] w-auto mb-6"/>
+                <img src="https://storage.googleapis.com/imagenes_bananos/votes/logos/logo-sedipro.png" alt="SEDIPRO" class="h-[60px] w-auto mb-6"/>
                 <h1 class="text-2xl font-bold text-[#333333]">
                     Sistema de Votación
                 </h1>
