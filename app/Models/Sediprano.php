@@ -14,12 +14,22 @@ class Sediprano extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
-        'area_id',
-        'cargo_id',
+        'codigo',
+        'dni',
+        'primer_apellido',
+        'segundo_apellido',
         'carrera_id',
-        'codigo_qr',
-        'estado'
+        'genero',
+        'celular',
+        'fecha_nacimiento',
+        'user_id',
+        'cargo_id',
+        'area_id',
+        'qr_code',
+        'qr_path',
+        'secret_key',
+        'token',
+        'qr_hash'
     ];
 
     protected $casts = [

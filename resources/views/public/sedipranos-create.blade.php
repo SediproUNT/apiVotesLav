@@ -44,6 +44,22 @@
                 @enderror
             </div>
 
+            <!-- Campo de género después del campo DNI -->
+            <div>
+                <label for="genero" class="block text-sm font-medium text-gray-700">Género</label>
+                <select name="genero" id="genero" required class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-azul focus:ring focus:ring-azul focus:ring-opacity-50">
+                    <option value="">Seleccione un género</option>
+                    @foreach (App\Enums\Genero::cases() as $genero)
+                        <option value="{{ $genero->value }}" {{ old('genero') == $genero->value ? 'selected' : '' }}>
+                            {{ ucfirst(strtolower($genero->value)) }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('genero')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
             <div>
                 <label for="nombre" class="block text-sm font-medium text-gray-700 mb-1">Nombre(s)*</label>
                 <input type="text" name="nombre" id="nombre" value="{{ old('nombre') }}" 
