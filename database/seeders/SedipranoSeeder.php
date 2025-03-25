@@ -1488,7 +1488,7 @@ class SedipranoSeeder extends Seeder
                 'dni' => '77281057',
                 'primer_apellido' => 'Lazaro',
                 'segundo_apellido' => 'Solano',
-                'carrera_id' => 26, // Informatica
+                'carrera_id' => 27, // Informatica
                 'celular' => '944377799',
                 'fecha_nacimiento' => Carbon::parse('2001-05-11'),
                 'user_id' => $this->createUser('Paul Jamir', 'T052700520@unitru.edu.pe', null),
