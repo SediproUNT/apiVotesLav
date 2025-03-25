@@ -1483,6 +1483,21 @@ class SedipranoSeeder extends Seeder
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
+            [
+                'codigo' => '1052700520',
+                'dni' => '77281057',
+                'primer_apellido' => 'Lazaro',
+                'segundo_apellido' => 'Solano',
+                'carrera_id' => 26, // Informatica
+                'celular' => '944377799',
+                'fecha_nacimiento' => Carbon::parse('2001-05-11'),
+                'user_id' => $this->createUser('Paul Jamir', 'T052700520@unitru.edu.pe', null),
+                'cargo_id' => 3,
+                'area_id' => 4,
+                'genero' => Genero::Masculino->value, // Usa el Enum para el género
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]
         ];
 
 
