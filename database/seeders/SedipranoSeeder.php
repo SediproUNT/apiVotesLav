@@ -18,7 +18,7 @@ class SedipranoSeeder extends Seeder
     public function run(): void
     {
         //
-        DB::table('sedipranos')->truncate();
+        //DB::table('sedipranos')->truncate();
 
         $sedipranosData = [
             [
